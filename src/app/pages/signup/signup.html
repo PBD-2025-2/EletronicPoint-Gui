@@ -1,0 +1,51 @@
+<app-default-login-layout 
+    title="SignUp and start now"
+    primaryBtnText="SignUp now"
+    secondaryBtnText="Login now"
+    (submit)="submit()"
+    (navigate)="navigate()"
+    [disablePrimaryBtn]="!signupForm.valid"
+>
+
+    <form [formGroup]="signupForm">
+        <app-primary-input
+            formControlName="name"
+            inputName="name"
+            type="text"
+            label="Your name"
+            placeholder="ShopTech"
+        >
+            <img src="assets/email-icon.svg"/>
+        </app-primary-input>
+
+        
+        <app-primary-input
+            formControlName="email"
+            inputName="email"
+            type="email"
+            label="Email"
+            placeholder="shoptech@gmail.com"
+        >
+            <img src="assets/email-icon.svg"/>
+        </app-primary-input>
+
+        <app-primary-input
+            formControlName="password"
+            inputName="password"
+            type="password"
+            label="Password"
+        >
+            <img src="assets/password-icon.svg"/>
+        </app-primary-input>
+
+        <app-primary-input
+            formControlName="passwordConfirm"
+            inputName="passwordConfirm"
+            type="password"
+            label="Confirm your password"
+        >
+            <img src="assets/password-icon.svg"/>
+        </app-primary-input>
+        
+    </form>
+</app-default-login-layout>

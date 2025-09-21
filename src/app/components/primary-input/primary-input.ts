@@ -1,7 +1,14 @@
 import { Component, forwardRef, Input } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
+import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 
 type InputTypes = "text" | "email" | "password"
+
+interface SignupForm {
+  name: FormControl,
+  email: FormControl,
+  password: FormControl,
+  passwordConfirm: FormControl
+}
 
 @Component({
   selector: 'app-primary-input',

@@ -16,8 +16,9 @@ export class DefaultLoginLayout {
   submit(){
     this.onSubmit.emit();
   }
-  
+
   navigate(){
     this.onNavigate.emit();
   }
+
 }
