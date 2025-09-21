@@ -1,0 +1,88 @@
+@import "../../../styles/variables.scss";
+
+
+
+
+main {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    align-items: stretch; // ocupa toda a altura
+    justify-content: center;
+
+    section {
+        height: 100%;
+    }
+
+    .main-section {
+	    flex-grow: 0.7;
+        display: flex;
+        flex-direction: column; //um elemento abaixo do outro
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        background-color: $gray-background; //ocupa mais espaço que form-section
+        padding: 20px;
+
+        h1 {
+            font-size: 32px;
+            font-weight: bold;
+        }
+        img {
+            max-width: 80%;
+            height: auto;
+        }
+    }
+    
+
+    .form-section {
+        flex-grow: 0.3;
+        display: flex;
+        flex-direction: column; //uma ao lado do outro
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+        gap: 16px;
+
+        h2 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .btn-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            gap: 30px;
+        }
+        img {
+            max-width: 120px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+
+            &.primary-btn {
+                background-color: $primary-color;
+                color: white;
+                box-shadow:0px 8px 12px rgba(148.23004603385925, 64.33935597538948, 255, 0.20000000298023224);
+            }
+
+            &.secondary-btn {
+                border: 1px solid $primary-color;
+                color: $primary-color;
+            }
+        }
+    }
+}

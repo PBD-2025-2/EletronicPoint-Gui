@@ -1,16 +1,16 @@
 <main>
-    <section>
-        <img src="assets/logopng.png" alt="Logo" width="100" height="auto">
-        <h2>Login</h2>
-        <button></button>
-        <div>
-            <span>or</span>
+    <section class="form-section">
+        <img src="assets/icon.png" alt="Logo">
+        <h2>{{ title }}</h2>
+        <ng-content></ng-content>
+        <div class="btn-wrapper">
+            <button class="primary-btn">{{primaryBtnText}}</button>
+            <div><span>or</span> </div>
+            <button class="secondary-btn">{{secondaryBtnText}}</button>
         </div>
-        <button></button>
     </section>
-    
-    <section>
+    <section class="main-section">
         <h1>CONNECT TO THE POINT!</h1>
-        <img src="assets/logopng.png" alt="Logo">
+        <img src="assets/logo500.png" alt="Logo">
     </section>
 </main>
