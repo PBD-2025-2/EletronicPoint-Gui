@@ -1,8 +1,32 @@
 <app-default-login-layout 
-title="Login into your account"
-primaryBtnText="Login now"
-secondaryBtnText="Signup now">
+    title="Login into your account"
+    primaryBtnText="Login now"
+    secondaryBtnText="Signup now"
+    (submit)="submit()"
+    (navigate)="navigate()"
+    [disablePrimaryBtn]="!loginForm.valid"
+>
 
-    <form>
+    <form [formGroup]="loginForm">
+        <app-primary-input
+            formControlName="email"
+            inputName="email"
+            type="email"
+            label="Email"
+            placeholder="shoptech@gmail.com"
+        >
+            <img src="assets/email-icon.svg"/>
+        </app-primary-input>
+
+        <app-primary-input
+            formControlName="password"
+            inputName="password"
+            type="password"
+            label="Password"
+        >
+            <img src="assets/password-icon.svg"/>
+        </app-primary-input>
+
+        <span>Forgot password?</span>
     </form>
 </app-default-login-layout>

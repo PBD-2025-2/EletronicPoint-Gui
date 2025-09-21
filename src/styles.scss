@@ -1,9 +1,12 @@
+@import 'ngx-toastr/toastr';
+
+
 * {
     //global styles
     margin: 0; //remove from all
     padding: 0; //remove from all
     box-sizing: border-box;
-
+    font-family: "Fredoka", sans-serif;
 }
 
 html, body {
