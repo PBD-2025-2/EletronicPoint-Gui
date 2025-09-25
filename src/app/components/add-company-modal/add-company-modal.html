@@ -1,0 +1,23 @@
+<div class="modal-overlay" (click)="close()">
+
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>Add Company</h2>
+    <form class="form-section">
+      <label class="input-name">
+        Name:
+        <input  placeholder="ShopTech Company" type="text" [(ngModel)]="name" name="name" required />
+      </label>
+      <label>
+        CNPJ:
+        <input placeholder="12345678910111"type="text" [(ngModel)]="cnpj" name="cnpj" required />
+      </label>
+
+      <div class="actions">
+        <button type="button" (click)="close()">CANCEL</button>
+        <button type="submit"
+        (click)="save()">SAVE</button>
+      </div>
+    </form>
+  </div>
+
+</div>

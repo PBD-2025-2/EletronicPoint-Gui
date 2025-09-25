@@ -1,0 +1,38 @@
+@import "../../../styles/variables.scss";
+
+h2 {
+  padding: 16px;
+}
+.layout {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 220px;
+  background: $primary-color;
+  color: white;
+  font-size: 20px;
+  padding: 20px 0;
+  border-right: 1px solid #000000;
+}
+
+.sidebar a {
+  display: block;
+  padding: 10px 20px;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.sidebar a.active,
+.sidebar a:hover {
+  background: $primary-color;
+  border-right: 5px solid white;
+  color: #fff;
+  border-radius: 4px;
+}
+
+.content { //
+  flex: 1;
+  padding: 20px;
+}

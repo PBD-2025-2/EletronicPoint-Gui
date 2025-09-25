@@ -55,6 +55,5 @@ export class PrimaryInput implements ControlValueAccessor {
   }
 
   setDisabledState(isDisabled: boolean): void {}
-
-
+  
 }

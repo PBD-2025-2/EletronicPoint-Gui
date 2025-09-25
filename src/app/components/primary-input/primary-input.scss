@@ -1,8 +1,8 @@
 @import "../../../styles/variables.scss";
 
 .input-wrapper {
-    color: $text-color; // Same thing for the label and input
-    font-size: 16px; // Same thing for the label and input
+    color: $text-color;
+    font-size: 16px; 
     text-align: start;
 
     .label {
@@ -19,7 +19,6 @@
             padding: 12px;
             background-color: $primary-color;
         }
-
     }
     
     input {

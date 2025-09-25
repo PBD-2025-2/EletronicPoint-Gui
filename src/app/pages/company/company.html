@@ -1,0 +1,33 @@
+<section class="find-section">
+    <div class="search-container">
+        <input
+            type="text" 
+            (input)="searchTerm = $event.target.value"
+            class="input-search-company" 
+            placeholder="Type an ID, a name or a CNPJ" 
+        />
+        <button 
+        class="search-btn" 
+        (click)="searchCompanies()">Search</button>
+    </div>
+    <button 
+        class="add-company-btn"
+        (click)="openModal()">Add</button>
+
+    <app-add-company-modal
+        *ngIf="showModal"
+        (closeModal)="showModal = false"
+        (addCompany)="addCompany($event.name, $event.cnpj)">
+    </app-add-company-modal>
+
+</section>
+
+<section class="companies-section">
+    <div class="company-list">
+        <div class="company-item" *ngFor="let company of companies">
+            <div class="company-info">
+            <strong>{{ company.name }}</strong>
+            </div>
+        </div>
+    </div>
+</section>

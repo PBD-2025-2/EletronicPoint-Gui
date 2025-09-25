@@ -16,7 +16,7 @@ import { ToastrService } from 'ngx-toastr';
     PrimaryInput
   ],
   providers: [
-    LoginService
+    LoginService,
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss'
@@ -38,7 +38,7 @@ export class Login {
 
   submit(){
     this.loginService.login(this.loginForm.value.email, this.loginForm.value.password).subscribe({
-      next: () => this.toastService.success("Login finished with sucess!"),
+      next: () => this.toastService.success("Login finished sucessfully!"),
       error: () => this.toastService.error("An error has occured. Try again later")
     })
   }
@@ -47,5 +47,4 @@ export class Login {
     this.router.navigate(["signup"])
   }
 
-  
 }

@@ -1,13 +1,10 @@
 @import "../../../styles/variables.scss";
 
-
-
-
 main {
     display: flex;
     height: 100vh;
     width: 100vw;
-    align-items: stretch; // ocupa toda a altura
+    align-items: stretch;
     justify-content: center;
 
     section {
@@ -17,17 +14,17 @@ main {
     .main-section {
 	    flex-grow: 0.7;
         display: flex;
-        flex-direction: column; //um elemento abaixo do outro
+        flex-direction: column; 
         align-items: center;
         justify-content: center;
         gap: 16px;
-        background-color: $gray-background; //ocupa mais espaço que form-section
+        background-color: $gray-background; 
         padding: 20px;
 
         h1 {
             font-size: 32px;
             font-weight: bold;
-            //font-family: "Fredoka", sans-serif;
+
         }
         img {
             max-width: 80%;
@@ -39,7 +36,7 @@ main {
     .form-section {
         flex-grow: 0.3;
         display: flex;
-        flex-direction: column; //uma ao lado do outro
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         padding: 40px;
@@ -57,7 +54,7 @@ main {
             align-items: center;
             justify-content: center;
             width: 100%;
-            gap: 30px;
+            gap: 16px;
         }
         img {
             max-width: 120px;
