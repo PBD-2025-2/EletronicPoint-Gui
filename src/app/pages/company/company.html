@@ -4,7 +4,7 @@
             type="text" 
             (input)="searchTerm = $event.target.value"
             class="input-search-company" 
-            placeholder="Type an ID, a name or a CNPJ" 
+            placeholder="Enter an ID, a name or a CNPJ" 
         />
         <button 
         class="search-btn" 
@@ -16,8 +16,12 @@
 
     <app-add-company-modal
         *ngIf="showModal"
+        title="Add Company"
+        secondLabel="CNPJ"
+        secondPlaceholder="12345678910111"
+        secondKey="cnpj"
         (closeModal)="showModal = false"
-        (addCompany)="addCompany($event.name, $event.cnpj)">
+        (saveItem)="addCompany($event.name, $event['cnpj'])">
     </app-add-company-modal>
 
 </section>

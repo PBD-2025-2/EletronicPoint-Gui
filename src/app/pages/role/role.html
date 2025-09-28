@@ -1,0 +1,49 @@
+<section class="find-section">
+    <div class="search-container">
+        <input
+            type="text" 
+            (input)="searchTerm1 = $event.target.value"
+            class="input-search-role1" 
+            placeholder="Enter an ID or a role name"
+        />
+        <input
+            type="text" 
+            (input)="searchTerm2 = $event.target.value"
+            class="input-search-role2" 
+            placeholder="Or the company's CNPJ" 
+        />
+        <button 
+        class="search-btn" 
+        (click)="searchRoles()">Search</button>
+    </div>
+    <button 
+        class="add-role-btn"
+        (click)="openModal()">Add</button>
+
+    <app-add-company-modal
+        *ngIf="showModal"
+        title="Add Role"
+        secondLabel="Company Name"
+        secondPlaceholder="Ex.: Google Corp"
+        secondKey="companyName"
+        (closeModal)="showModal = false"
+        (saveItem)="addRole($event.name, $event['companyName'])">
+    </app-add-company-modal>
+</section>
+
+<section class="roles-section">
+  <div class="role-list">
+    <label>
+        Companies
+    </label>
+    <div class="company-item" *ngFor="let group of groupedRoles">
+        <div class="company-header" (click)="group.expanded = !group.expanded"> {{ group.companyName }}
+            <span class="toggle-icon" [class.open]="group.expanded">▶</span>
+        </div>
+
+        <div class="role-sublist" [class.expanded]="group.expanded">
+            <div class="role-item" *ngFor="let role of group.roles"> {{ role.name }} </div>
+        </div>
+  </div>
+</div>
+</section>

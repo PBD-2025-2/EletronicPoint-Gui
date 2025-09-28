@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -9,19 +9,29 @@ import { FormsModule } from '@angular/forms';
   imports: [CommonModule, FormsModule],   
   styleUrls: ['./add-company-modal.scss']
 })
+
 export class AddCompanyModalComponent {
-  @Output() closeModal = new EventEmitter();
-  @Output() addCompany = new EventEmitter<{name:string, cnpj:string}>();
+  @Input() title = 'Add Item';
+
+  @Input() secondLabel = 'Document';
+  @Input() secondPlaceholder = '';
+
+  @Input() secondKey = 'document';
+
+  @Output() closeModal = new EventEmitter<void>();
+  @Output() saveItem = new EventEmitter<{ name: string; [key: string]: string }>();
 
   name = '';
-  cnpj = '';
+  secondValue = '';
 
-  close() {
+    close() {
     this.closeModal.emit();
   }
 
   save() {
-    this.addCompany.emit({ name: this.name, cnpj: this.cnpj });
-    this.close();
+    this.saveItem.emit({
+      name: this.name,
+      [this.secondKey]: this.secondValue   //dynamic key
+    });
   }
 }

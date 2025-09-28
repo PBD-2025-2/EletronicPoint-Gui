@@ -15,7 +15,7 @@ export interface Company {
 })
 
 export class CompanyService {
-  private apiUrl = 'http://localhost:8080/api/companies';
+  private apiUrl = 'http://localhost:8181/api/v1/companies';
 
   constructor(private http: HttpClient) {}
 
@@ -56,4 +56,10 @@ searchCompanies(term: string): Observable<Company[]> {
   addCompany(company: Omit<Company, 'id'>): Observable<Company> {
     return this.http.post<Company>(this.apiUrl, company);
   } 
+
+   getCompanyByName(name: string): Observable<Company> {
+    const encoded = encodeURIComponent(name.trim());
+
+    return this.http.get<Company[]>(`${this.apiUrl}/name/${encoded}`).pipe(map(arr => arr[0]));
+  }
 }

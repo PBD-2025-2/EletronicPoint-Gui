@@ -46,5 +46,4 @@ export class Login {
   navigate(){
     this.router.navigate(["signup"])
   }
-
 }

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { CompanyService, Company } from '../../services/company.service';
 import { AddCompanyModalComponent } from '../../components/add-company-modal/add-company-modal';
 
+
 @Component({
   selector: 'app-company',
   templateUrl: './company.html',
@@ -69,7 +70,7 @@ export class CompanyComponent implements OnInit {
         this.showModal = false;
       }, 
       error: (err) => {
-        console.error('Error while creating Company', err);
+        console.log('Error while creating Company', err);
         this.saving = false;
       }
     });

@@ -21,5 +21,4 @@ export class DefaultLoginLayout {
   navigate(){
     this.onNavigate.emit();
   }
-
 }

@@ -1,0 +1,118 @@
+@import "../../../styles/variables.scss";
+
+
+.find-section {
+    display: flex;    
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-right: 24px;
+
+    .search-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;       
+    }
+
+    .input-search-role1 {
+        font-size: 18px;
+        padding: 12px 16px;
+        width: 280px;
+        border: 2px solid $primary-color;
+        border-radius: 6px;
+    }
+    .input-search-role2 {
+        font-size: 18px;
+        padding: 12px 16px;
+        width: 260px;
+        border: 2px solid $primary-color;
+        border-radius: 6px;
+    }
+    
+    button {
+        background-color: $primary-color;
+        padding: 14px;
+        border-radius: 8px;
+        cursor: pointer;
+
+        &.search-btn {
+            color: white;
+            font-size: 16px;
+        }
+
+        &.add-role-btn {
+            width: 200px;
+            margin-left: auto; 
+            color: white;
+            font-size: 16px;
+        }
+    }
+}
+
+.roles-section {
+  margin-top: 24px;
+
+  .role-list {
+        max-height: 500px;
+        overflow-y: auto;
+        padding: 12px;
+    }
+
+  label {
+    font-size: 16px;
+    padding: 4px;
+  }
+  .company-item {
+    outline: 1px solid $secondary-color;
+    border: none;
+    border-radius: 8px;
+    margin-bottom: 8px;
+
+    .company-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      background-color: white;
+      border: 1px solid $primary-color;
+      border-radius: 8px;
+      background-color: #fff;
+
+      &:hover {
+        background-color: lighten($primary-color, 8%);
+      }
+
+      .toggle-icon { 
+        transition: transform 0.1s ease-in-out; 
+        &.open { 
+          transform: rotate(90deg); 
+        } 
+      }
+    }
+
+    .role-sublist {
+      padding: 0 12px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.25s ease, padding 0.25s ease;
+
+      &.expanded {
+        padding: 12px;
+        max-height: 500px;
+      }
+
+      .role-item {
+        padding: 8px 0;
+        font-size: 16px;
+        border-bottom: 1px solid $gray-background;
+
+        &:last-child {
+          border-bottom: none;
+        }
+      }
+    }
+  }
+}

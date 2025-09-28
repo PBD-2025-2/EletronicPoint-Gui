@@ -1,1 +1,38 @@
-<h2>EMPLOYEE SCREEN</h2>
+<section class="find-section">
+    <div class="search-container">
+        <input
+            type="text" 
+            (input)="searchTerm = $event.target.value"
+            class="input-search-employee" 
+            placeholder="Enter an ID or a employee name" 
+        />
+        <button 
+        class="search-btn" 
+        (click)="searchEmployees()">Search</button>
+    </div>
+    <button 
+        class="add-employee-btn"
+        (click)="openModal()">Add</button>
+
+    <app-add-company-modal
+        *ngIf="showModal"
+        title="Add Employee"
+        secondLabel="CPF"
+        secondPlaceholder="12345678900"
+        secondKey="cpf"
+        (closeModal)="showModal = false"
+        (saveItem)="addEmployee($event.name, $event['cpf'])">
+    </app-add-company-modal>
+
+
+</section>
+
+<section class="employees-section">
+    <div class="employee-list">
+        <div class="employee-item" *ngFor="let employee of employees">
+            <div class="employee-info">
+            <strong>{{ employee.name }}</strong>
+            </div>
+        </div>
+    </div>
+</section>

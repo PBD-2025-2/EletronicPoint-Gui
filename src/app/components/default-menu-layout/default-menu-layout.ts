@@ -8,6 +8,4 @@ import { RouterModule } from '@angular/router';
   styleUrl: './default-menu-layout.scss'
 })
 
-export class DefaultMenuLayout {
-
-}
+export class DefaultMenuLayout { }
