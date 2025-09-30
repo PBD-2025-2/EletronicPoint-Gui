@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { catchError, defaultIfEmpty, filter, first, noop, Observable } from 'rxjs';
 import { of, concat } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 export interface Employee {
   id: number;
@@ -15,7 +16,7 @@ export interface Employee {
 })
 
 export class EmployeeService {
-  private apiUrl = 'http://localhost:8181/api/v1/employees';
+  private apiUrl = `${environment.apiUrl}/eletronicPoint/api/v1/employees`;
 
   constructor(private http: HttpClient) {}
 

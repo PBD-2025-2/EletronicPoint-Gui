@@ -4,6 +4,7 @@ import { catchError, defaultIfEmpty, filter, first, noop, Observable } from 'rxj
 import { of, concat } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Company } from './company.service';
+import { environment } from '../../environments/environment';
 
 export interface Role {
   name: string;
@@ -17,8 +18,8 @@ export interface Role {
 })
 
 export class RoleService {
-  private apiUrlCompany = 'http://localhost:8181/api/v1/companies';
-  private apiUrl = 'http://localhost:8181/api/v1/roles';
+  private apiUrlCompany = `${environment.apiUrl}/eletronicPoint/api/v1/companies`;
+  private apiUrl = `${environment.apiUrl}/eletronicPoint/api/v1/roles`;
 
   constructor(private http: HttpClient) {}
 
