@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { catchError, defaultIfEmpty, filter, first, noop, Observable, throwError } from 'rxjs';
 import { of, concat } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 export interface Company {
   id: number;
@@ -15,15 +16,13 @@ export interface Company {
 })
 
 export class CompanyService {
-  private apiUrl = 'http://localhost:8181/api/v1/companies';
+  private apiUrl = `${environment.apiUrl}/eletronicPoint/api/v1/companies`;
 
   constructor(private http: HttpClient) {}
 
   getCompanies(): Observable<Company[]> {
     return this.http.get<Company[]>(this.apiUrl);
   }
-
-
 
 searchCompanies(term: string): Observable<Company[]> {
   const encodedTerm = encodeURIComponent(term.trim());
@@ -57,7 +56,7 @@ searchCompanies(term: string): Observable<Company[]> {
     return this.http.post<Company>(this.apiUrl, company);
   } 
 
-   getCompanyByName(name: string): Observable<Company> {
+  getCompanyByName(name: string): Observable<Company> {
     const encoded = encodeURIComponent(name.trim());
     return this.http.get<Company[]>(`${this.apiUrl}/name/${encoded}`).pipe(
       map(arr => {

@@ -3,7 +3,7 @@ import { DefaultLoginLayout } from '../../components/default-login-layout/defaul
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PrimaryInput } from '../../components/primary-input/primary-input';
 import { Route, Router } from '@angular/router';
-import { LoginService } from '../../services/login-service';
+import { AuthService } from '../../services/auth.service';
 import { ToastrService } from 'ngx-toastr';
 
 interface SignupForm {
@@ -21,7 +21,7 @@ interface SignupForm {
     PrimaryInput
   ],
   providers: [
-    LoginService
+    AuthService
   ],
   templateUrl: './signup.html',
   styleUrl: './signup.scss'
@@ -32,7 +32,7 @@ export class Signup {
 
   constructor(
     private router: Router,
-    private loginService: LoginService,
+    private authService: AuthService,
     private toastService: ToastrService
   ) {    
     this.signupForm = new FormGroup({
@@ -44,7 +44,7 @@ export class Signup {
   }
 
   submit(){
-    this.loginService.login(this.signupForm.value.email, this.signupForm.value.password).subscribe({
+    this.authService.login(this.signupForm.value.email, this.signupForm.value.password).subscribe({
       next: () => this.toastService.success("Login finished sucessfully!"),
       error: () => this.toastService.error("An error has occured. Try again later")
     })
