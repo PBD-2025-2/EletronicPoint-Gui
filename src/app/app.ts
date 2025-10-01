@@ -1,12 +1,17 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { NotificationService } from './services/notification.service';
+import { NotificationComponent } from './components/notification/notification';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, NotificationComponent ],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  standalone: true,
+  styleUrl: './app.scss',
 })
 export class App {
-  protected readonly title = signal('Eletronic-Point-GUI');
+  errorMessage: string | null = null;
+  successMessage: string | null = null;
+
 }

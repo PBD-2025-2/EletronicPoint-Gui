@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, defaultIfEmpty, filter, first, noop, Observable } from 'rxjs';
+import { catchError, defaultIfEmpty, filter, first, noop, Observable, throwError } from 'rxjs';
 import { of, concat } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -32,12 +32,12 @@ searchCompanies(term: string): Observable<Company[]> {
   const urlById   = `${this.apiUrl}/id/${encodedTerm}`;
 
   const safeGet = (url: string) =>
-    this.http.get<Company[]>(url).pipe(catchError(() => of([])));
+    this.http.get<Company[]>(url).pipe(catchError(err => throwError(() => err)));
 
   const safeGetId = (url: string) =>
     this.http.get<Company>(url).pipe(
       map(c => c ? [c] : []),
-      catchError(() => of([]))
+      catchError(err => throwError(() => err))
   );
 
   const requests = [
@@ -59,7 +59,14 @@ searchCompanies(term: string): Observable<Company[]> {
 
    getCompanyByName(name: string): Observable<Company> {
     const encoded = encodeURIComponent(name.trim());
-
-    return this.http.get<Company[]>(`${this.apiUrl}/name/${encoded}`).pipe(map(arr => arr[0]));
+    return this.http.get<Company[]>(`${this.apiUrl}/name/${encoded}`).pipe(
+      map(arr => {
+        if (!arr || arr.length === 0) {
+          throw new Error('Company not found');
+        }
+        return arr[0];
+      })
+    );
   }
+
 }

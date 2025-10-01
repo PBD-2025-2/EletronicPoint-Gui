@@ -1,9 +1,10 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
-
 import { routes } from './app.routes';
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { provideToastr } from 'ngx-toastr';
+import { ErrorHandler } from '@angular/core';
+import { GlobalErrorHandler } from './services/global-error-handler';
 
 
 export const appConfig: ApplicationConfig = {
@@ -13,6 +14,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(), 
     provideHttpClient(withFetch()),
-    provideToastr()
+    provideToastr(),
+    { provide: ErrorHandler, useClass: GlobalErrorHandler }
   ]
 };

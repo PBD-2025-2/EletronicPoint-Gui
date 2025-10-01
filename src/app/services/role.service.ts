@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, defaultIfEmpty, filter, first, noop, Observable } from 'rxjs';
+import { catchError, defaultIfEmpty, filter, first, noop, Observable, throwError } from 'rxjs';
 import { of, concat } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Company } from './company.service';
@@ -33,12 +33,12 @@ searchRoles(term: string): Observable<Role[]> {
   const urlById   = `${this.apiUrl}/id/${encodedTerm}`;
 
   const safeGet = (url: string) =>
-    this.http.get<Role[]>(url).pipe(catchError(() => of([])));
+    this.http.get<Role[]>(url).pipe(catchError(err => throwError(() => err)));
 
   const safeGetId = (url: string) =>
     this.http.get<Role>(url).pipe(
       map(c => c ? [c] : []),
-      catchError(() => of([]))
+      catchError(err => throwError(() => err))
   );
 
   const requests = [
@@ -60,7 +60,7 @@ searchRoles(term: string): Observable<Role[]> {
     const url = `${this.apiUrl}/rolename/${encName}/cnpj/${encCnpj}`;
 
     return this.http.get<Role[]>(url).pipe(
-      catchError(() => of([]))
+      catchError(err => throwError(() => err))
     );
   }
 
@@ -68,7 +68,7 @@ searchRoles(term: string): Observable<Role[]> {
     const encoded = encodeURIComponent(cnpj);
     return this.http
       .get<Role[]>(`${this.apiUrl}/cnpj/${encoded}`)
-      .pipe(catchError(() => of([])));
+      .pipe( catchError(err => throwError(() => err)));
   }
 
   addRole(role: { name: string; companyId: number }): Observable<Role> {

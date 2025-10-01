@@ -2,10 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { Employee, EmployeeService } from '../../services/employee.service';
 import { AddCompanyModalComponent } from '../../components/add-company-modal/add-company-modal';
 import { CommonModule } from '@angular/common';
+import { NotificationComponent } from '../../components/notification/notification';
 
 @Component({
   selector: 'app-employee',
-  imports: [CommonModule, AddCompanyModalComponent],
+  imports: [CommonModule, AddCompanyModalComponent, NotificationComponent],
   templateUrl: './employee.html',
   styleUrl: './employee.scss'
 })
@@ -15,11 +16,27 @@ export class EmployeeComponent implements OnInit {
   employees: Employee[] = [];
   searchTerm: string = '';
   showModal = false;
+  errorMessage: string | null = null;
+  successMessage: string | null = null;
+  
 
   constructor (
     private employeeService: EmployeeService,
   ) {} 
 
+  private showNotification(message: string, typeNotification: boolean) {
+    if (typeNotification) {
+      // Sucess notification
+      this.successMessage = message;
+      setTimeout(() => this.successMessage = null, 3000);
+
+
+    } else {
+      // Error notification
+      this.errorMessage = message;
+      setTimeout(() => this.errorMessage = null, 3000);
+    }
+  }
   
   ngOnInit() {
     this.loadEmployees();
@@ -40,12 +57,10 @@ export class EmployeeComponent implements OnInit {
     
     this.employeeService.searchEmployees(term).subscribe({
       next: (data) => {
-        console.log("Received data from the Backend", data);
-        
         this.employees = data;
       },
       error: (err) => {
-        console.error("Error while doing search", err);
+        this.showNotification("Error while doing search! Employee not found.", false);
       }
     });
   }
@@ -62,15 +77,13 @@ export class EmployeeComponent implements OnInit {
     this.saving = true;
 
     this.employeeService.addEmployee(newEmployee).subscribe({
-      
       next: (created) => {
-        console.log('Employee created sucessfully', created);
         this.employees = [...this.employees, created];
         this.saving = false;
         this.showModal = false;
       }, 
       error: (err) => {
-        console.error('Error while creating Employee', err);
+        this.showNotification('Error while creating Employee', false);
         this.saving = false;
       }
     });
