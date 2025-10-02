@@ -29,12 +29,7 @@ export class Login {
     private authService: AuthService,
     private toastService: ToastrService) {    
     this.loginForm = new FormGroup({
-<<<<<<< HEAD
-      email: new FormControl('', [Validators.required, Validators.email]),
-=======
-
       email: new FormControl(''),
->>>>>>> 71cae37fc1d194a569347b08ec9321e60d5649b2
       password: new FormControl('', [Validators.required, Validators.minLength(6)])
     })
   }

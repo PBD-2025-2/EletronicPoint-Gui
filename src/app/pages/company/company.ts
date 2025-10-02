@@ -87,8 +87,9 @@ export class CompanyComponent implements OnInit {
         this.showModal = false;
       }, 
       error: (err) => {
-        this.showNotification("Error while creating Company", true);
+        this.showNotification("Error while creating Company", false);
         this.saving = false;
+        this.showModal = false;
       }
     });
   }

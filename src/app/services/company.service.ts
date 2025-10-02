@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { catchError, defaultIfEmpty, filter, first, noop, Observable, throwError } from 'rxjs';
 import { of, concat } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
+import { environment } from '../environments/environment';
 
 export interface Company {
   id: number;
