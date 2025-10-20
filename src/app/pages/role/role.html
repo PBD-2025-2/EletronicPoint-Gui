@@ -1,5 +1,6 @@
-<app-notification [message]="errorMessage" type="error"></app-notification>
-<app-notification [message]="successMessage" type="success"></app-notification>
+<!-- <app-notification [message]="errorMessage" type="error"></app-notification> -->
+<!--<app-notification [message]="successMessage" type="success"></app-notification> -->
+
 
 
 <section class="find-section">
@@ -23,6 +24,9 @@
     <button 
         class="add-role-btn"
         (click)="openModal()">Add</button>
+    <button 
+        class="attach-role-btn"
+        (click)="openAttachModal()">Attach Role to Employee</button>
 
     <app-add-company-modal
         *ngIf="showModal"
@@ -33,6 +37,14 @@
         (closeModal)="showModal = false"
         (saveItem)="addRole($event.name, $event['companyName'])">
     </app-add-company-modal>
+
+    <app-attach-role-employee-modal
+        *ngIf="isAttachModalOpen"
+        (closeModal)="closeAttachModal()"
+        (saveItem)="onAttachSave($event)"
+    ></app-attach-role-employee-modal>
+
+
 </section>
 
 <section class="roles-section">
@@ -51,3 +63,33 @@
   </div>
 </div>
 </section>
+
+<div class="pagination-controls" *ngIf="totalItems > pageSize">
+  
+  <button 
+    (click)="previousPage()" 
+    [disabled]="currentPage === 1"
+    class="pagination-btn">
+    &laquo; Previous
+  </button>
+
+  <ng-container *ngFor="let pageNum of [].constructor(totalPages); let i = index">
+    <button
+      (click)="goToPage(i + 1)"
+      [class.active-page]="currentPage === i + 1"
+      class="page-number-btn">
+      {{ i + 1 }}
+    </button>
+  </ng-container>
+
+  <span class="page-status">
+    Page {{ currentPage }}/{{ totalPages }}
+  </span>
+
+  <button 
+    (click)="nextPage()" 
+    [disabled]="currentPage === totalPages || totalPages === 0"
+    class="pagination-btn">
+    Next &raquo;
+  </button>
+</div>

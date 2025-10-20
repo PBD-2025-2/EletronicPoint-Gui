@@ -1,6 +1,5 @@
-<app-notification [message]="errorMessage" type="error"></app-notification>
-<app-notification [message]="successMessage" type="success"></app-notification>
-
+<!-- <app-notification [message]="errorMessage" type="error"></app-notification> -->
+<!--<app-notification [message]="successMessage" type="success"></app-notification> -->
 
 <section class="find-section">
     <div class="search-container">
@@ -10,13 +9,9 @@
             class="input-search-employee" 
             placeholder="Enter an ID or a employee name" 
         />
-        <button 
-        class="search-btn" 
-        (click)="searchEmployees()">Search</button>
+        <button class="search-btn" (click)="searchEmployees()">Search</button>
     </div>
-    <button 
-        class="add-employee-btn"
-        (click)="openModal()">Add</button>
+    <button class="add-employee-btn" (click)="openModal()">Add</button>
 
     <app-add-company-modal
         *ngIf="showModal"
@@ -33,10 +28,38 @@
 
 <section class="employees-section">
     <div class="employee-list">
-        <div class="employee-item" *ngFor="let employee of employees">
+        <div class="employee-item" *ngFor="let employee of paginatedRoles">
             <div class="employee-info">
             <strong>{{ employee.name }}</strong>
             </div>
         </div>
     </div>
 </section>
+
+
+<div class="pagination-controls" *ngIf="totalPages > 1">
+    <button 
+        (click)="changePage(currentPage - 1)" 
+        [disabled]="currentPage === 1"
+        class="pagination-btn">
+        &laquo; Previous
+    </button>
+        <ng-container *ngFor="let pageNum of getPagesArray()">
+            <button
+                (click)="changePage(pageNum)"
+                [class.active-page]="currentPage === pageNum"
+                class="page-number-btn">
+                {{ pageNum }}
+            </button>
+        </ng-container>
+
+        <span class="page-status"> Page {{ currentPage }}/{{ totalPages }} </span>
+
+        <button 
+            (click)="changePage(currentPage + 1)" 
+            [disabled]="currentPage === totalPages"
+            class="pagination-btn">
+            Next &raquo;
+        </button>
+</div>
+

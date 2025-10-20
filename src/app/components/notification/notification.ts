@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-notification',
@@ -12,9 +14,34 @@ import { Component, Input } from '@angular/core';
   `,
   styleUrls: ['./notification.scss']
 })
+export class NotificationComponent implements OnDestroy {
+  message: string | null = null;
+  type: 'error' | 'success' = 'error';
+  private subscription = new Subscription();
 
+  constructor(private notificationService: NotificationService) {
+    this.subscription.add(
+      this.notificationService.error$.subscribe(msg => {
+        this.type = 'error';
+        this.message = msg;
+        this.resetAfterDelay();
+      })
+    );
 
-export class NotificationComponent {
-  @Input() message: string | null = null;
-  @Input() type: 'error' | 'success' = 'success';
+    this.subscription.add(
+      this.notificationService.success$.subscribe(msg => {
+        this.type = 'success';
+        this.message = msg;
+        this.resetAfterDelay();
+      })
+    );
+  }
+
+  private resetAfterDelay() {
+    setTimeout(() => (this.message = null), 4000);
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
 }

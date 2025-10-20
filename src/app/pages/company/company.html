@@ -1,5 +1,5 @@
-<app-notification [message]="errorMessage" type="error"></app-notification>
-<app-notification [message]="successMessage" type="success"></app-notification>
+<!-- <app-notification [message]="errorMessage" type="error"></app-notification> -->
+<!--<app-notification [message]="successMessage" type="success"></app-notification> -->
 
 <section class="find-section">
     <div class="search-container">
@@ -31,10 +31,37 @@
 
 <section class="companies-section">
     <div class="company-list">
-        <div class="company-item" *ngFor="let company of companies">
+        <div class="company-item" *ngFor="let company of paginatedCompanies">
             <div class="company-info">
             <strong>{{ company.name }}</strong>
             </div>
         </div>
     </div>
 </section>
+
+<div class="pagination-controls" *ngIf="totalPages > 1">
+    <button 
+        (click)="changePage(currentPage - 1)" 
+        [disabled]="currentPage === 1"
+        class="pagination-btn">
+        &laquo; Previous
+    </button>
+
+    <ng-container *ngFor="let pageNum of getPagesArray()">
+        <button
+            (click)="changePage(pageNum)"
+            [class.active-page]="currentPage === pageNum"
+            class="page-number-btn">
+            {{ pageNum }}
+        </button>
+    </ng-container>
+    <span class="page-status"> Page {{ currentPage }}/{{ totalPages }} </span>
+    
+    <button 
+        (click)="changePage(currentPage + 1)" 
+        [disabled]="currentPage === totalPages"
+        class="pagination-btn">
+        Next &raquo;
+    </button>
+
+</div>

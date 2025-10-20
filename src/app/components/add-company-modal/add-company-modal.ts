@@ -24,7 +24,7 @@ export class AddCompanyModalComponent {
   name = '';
   secondValue = '';
 
-    close() {
+  close() {
     this.closeModal.emit();
   }
 

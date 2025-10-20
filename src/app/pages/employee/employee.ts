@@ -2,11 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { Employee, EmployeeService } from '../../services/employee.service';
 import { AddCompanyModalComponent } from '../../components/add-company-modal/add-company-modal';
 import { CommonModule } from '@angular/common';
-import { NotificationComponent } from '../../components/notification/notification';
 
 @Component({
   selector: 'app-employee',
-  imports: [CommonModule, AddCompanyModalComponent, NotificationComponent],
+  imports: [CommonModule, AddCompanyModalComponent],
   templateUrl: './employee.html',
   styleUrl: './employee.scss'
 })
@@ -22,7 +21,37 @@ export class EmployeeComponent implements OnInit {
 
   constructor (
     private employeeService: EmployeeService,
-  ) {} 
+  ) {}
+
+  
+    // Pagination variables
+    currentPage: number = 1;
+    itemsPerPage: number = 10; 
+  
+    // Paginated list getter
+    get paginatedRoles(): Employee[] {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      return this.employees.slice(start, start + this.itemsPerPage);
+    }
+  
+    // Total pages getter
+    get totalPages(): number {
+      return Math.ceil(this.employees.length / this.itemsPerPage);
+    
+    }
+  
+    // page buttons method 
+    getPagesArray(): number[] {
+      return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+    }
+  
+    // Change pagination
+    changePage(page: number) {
+      if (page >= 1 && page <= this.totalPages) {
+        this.currentPage = page;
+      }
+    }
+
 
   private showNotification(message: string, typeNotification: boolean) {
     if (typeNotification) {
@@ -58,6 +87,7 @@ export class EmployeeComponent implements OnInit {
     this.employeeService.searchEmployees(term).subscribe({
       next: (data) => {
         this.employees = data;
+        this.currentPage = 1; 
       },
       error: (err) => {
         this.showNotification("Error while doing search! Employee not found.", false);
@@ -79,6 +109,7 @@ export class EmployeeComponent implements OnInit {
     this.employeeService.addEmployee(newEmployee).subscribe({
       next: (created) => {
         this.employees = [...this.employees, created];
+        this.currentPage = this.totalPages; // Move to last page
         this.saving = false;
         this.showModal = false;
       }, 

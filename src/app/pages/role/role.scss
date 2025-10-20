@@ -18,7 +18,7 @@
     .input-search-role1 {
         font-size: 18px;
         padding: 12px 16px;
-        width: 280px;
+        width: 260px;
         border: 2px solid $primary-color;
         border-radius: 6px;
     }
@@ -42,10 +42,16 @@
         }
 
         &.add-role-btn {
-            width: 200px;
+            width: 150px;
             margin-left: auto; 
             color: white;
             font-size: 16px;
+        }
+
+        &.attach-role-btn {
+          width: 250px;
+          color: white;
+          font-size: 16px;
         }
     }
 }
@@ -115,5 +121,59 @@
         }
       }
     }
+  }
+}
+
+.pagination-controls {
+  display: flex;
+  width: fit-content;
+  width: 80%;
+  justify-content: center; 
+  align-items: center;
+  position: absolute;
+  height: 20px;
+  bottom: 0;
+  margin-bottom: 16px;
+  gap: 10px; 
+  padding-bottom: 20px;
+  border-radius: 6px 6px 0 0; /* opcional: cantos arredondados */
+
+  .pagination-btn, .page-number-btn {
+    background-color: $primary-color;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s;
+
+    &:disabled {
+      background-color: color.adjust($primary-color, $lightness: 20%);
+      cursor: not-allowed;
+    }
+
+    &:hover:not(:disabled) {
+      background-color: color.adjust($primary-color, $lightness: -10%); 
+    }
+  }
+
+  .page-number-btn {
+    width: 40px;
+    padding: 8px;
+  }
+
+  .page-number-btn.active-page {
+    // Inverte o estilo para a página atual
+    background-color: white; 
+    color: $primary-color;
+    border: 2px solid $primary-color;
+    font-weight: bold;
+  }
+
+  .page-status {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0 10px;
   }
 }
