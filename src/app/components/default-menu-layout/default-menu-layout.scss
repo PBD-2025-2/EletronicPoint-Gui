@@ -24,6 +24,12 @@ h2 {
   text-decoration: none;
 }
 
+.sidebar ul {
+  list-style: none;
+  margin-left: 12px;
+  padding: 0;
+}
+
 .sidebar a.active,
 .sidebar a:hover {
   background: $primary-color;

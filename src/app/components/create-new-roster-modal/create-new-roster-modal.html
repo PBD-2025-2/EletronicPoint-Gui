@@ -1,0 +1,123 @@
+<div class="modal-overlay" (click)="close()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2><strong>Create new Roster</strong></h2>
+
+    <label>
+      Roster Type:
+      <select class="select-roster" [(ngModel)]="rosterType" name="rosterType" required>
+        <option value="daily">Daily</option>
+        <option value="duty">Duty</option>
+      </select>
+    </label>
+
+    <div class="daily-schedules-section">
+      <form class="form-section">
+        <label>
+          Roster Name:
+          <input
+            placeholder="Roster Name"
+            type="text"
+            [(ngModel)]="rosterName"
+            name="rosterName"
+            required
+          />
+        </label>
+
+        <label>
+          Weekly Workload (hours):
+          <input
+            placeholder="Ex: 40"
+            type="number"
+            [(ngModel)]="weeklyWorkload"
+            name="weeklyWorkload"
+            required
+          />
+        </label>
+
+        <!-- DAILY SCHEDULES -->
+        <div *ngIf="rosterType === 'daily'" class="days-section">
+          <p>Define up to 7 days and 2 time intervals per day:</p>
+      
+          <!-- Insert day section -->
+          <div class="day-row" *ngFor="let day of dailySchedules; let i = index">
+            <div class="day-header">
+              <input
+                class="day-input"
+                placeholder="Day (e.g. Monday)"
+                type="text"
+                [(ngModel)]="dailySchedules[i].day"
+                name="day{{ i }}"
+                required
+              />
+              <button classtype="button" (click)="removeDay(i)">Remove Day</button>
+            </div>
+
+            <!-- Insert time section -->
+            <div class="schedule-row" *ngFor="let sched of dailySchedules[i].schedules; let j = index">
+            <input
+              class="schedule-input"
+              type="time"
+              [(ngModel)]="dailySchedules[i].schedules[j].start"
+              name="start{{ i }}_{{ j }}"
+              required
+            />
+            -
+            <input
+              class="schedule-input"
+              type="time"
+              [(ngModel)]="dailySchedules[i].schedules[j].end"
+              name="end{{ i }}_{{ j }}"
+              required
+            />
+            <button type="button" (click)="removeSchedule(i, j)">Remove</button>
+          </div>
+
+          <button type="button" (click)="addSchedule(i)" [disabled]="dailySchedules[i].schedules.length >= 2"> + Add Interval</button>
+        </div>
+
+        <button type="button" (click)="addDay()" [disabled]="dailySchedules.length >= 7">+ Add Day</button>
+        
+      </div>
+      
+
+      <!-- DUTY SCHEDULES -->
+      <div *ngIf="rosterType === 'duty'" class="duty-section">
+        <label>
+          Start Time:
+          <input
+            type="time"
+            [(ngModel)]="dutySchedules.startTime"
+            name="startTime"
+            required
+          />
+        </label>
+
+        <label>
+          Work Duration (hours):
+          <input
+            type="number"
+            [(ngModel)]="dutySchedules.workDuration"
+            name="workDuration"
+            required
+          />
+        </label>
+
+        <label>
+          Time Off (hours):
+          <input
+            type="number"
+            [(ngModel)]="dutySchedules.timeOff"
+            name="timeOff"
+            required
+          />
+        </label>
+      </div>
+
+      <div class="actions">
+        <button class="close-btn" type="button" (click)="close()">Cancel</button>
+        <button type="button" (click)="attach()">Create Roster</button>
+      </div>
+    </form>
+  </div>  
+</div>    
+

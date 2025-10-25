@@ -5,6 +5,7 @@ import { RoleComponent } from './pages/role/role';
 import { EmployeeComponent } from './pages/employee/employee';
 import { DefaultMenuLayout } from './components/default-menu-layout/default-menu-layout';
 import { CompanyComponent } from './pages/company/company';
+import { RegisterRoster } from './components/register-roster/register-roster';
 
 
 
@@ -21,6 +22,7 @@ export const routes: Routes = [
         { path: 'company', component: CompanyComponent },
         { path: 'roles', component: RoleComponent },
         { path: 'employee', component: EmployeeComponent },
+         { path: 'roster', component: RegisterRoster },
         { path: '', redirectTo: 'company', pathMatch: 'full' }
         ]
     },

@@ -43,8 +43,8 @@ export class RoleService {
 
     const requests = [
       safeGet(urlByName),
-      safeGet(urlByCnpj),
-      safeGetId(urlById)
+      safeGetId(urlById),
+      safeGet(urlByCnpj)
     ];
 
     return concat(...requests).pipe(
@@ -59,6 +59,7 @@ export class RoleService {
     const encCnpj = encodeURIComponent(cnpj.trim());
     const url = `${this.apiUrl}/rolename/${encName}/cnpj/${encCnpj}`;
 
+    
     return this.http.get<Role[]>(url).pipe(
       catchError(err => throwError(() => err))
     );
@@ -70,8 +71,16 @@ export class RoleService {
       .pipe( catchError(err => throwError(() => err)));
   }
 
+  searchRoleById(rosterId: string): Observable<Role[]> {
+    const encoded = encodeURIComponent(rosterId);
+    return this.http.get<Role[]>(`${this.apiUrl}/id/${encoded}`)
+      .pipe( catchError(err => throwError(() => err)));
+  }
+
   addRole(role: { name: string; companyId: number }): Observable<Role> {
-    return this.http.post<Role>(this.apiUrl, role);
+    return this.http.post<Role>(this.apiUrl, role).pipe(
+      catchError(err => throwError(() => err))
+    );
   }
 
 }

@@ -34,6 +34,7 @@
         }
 
         &.add-company-btn {
+            background-color: $add-btn-color;
             width: 200px;
             margin-left: auto; 
             color: white;
@@ -92,44 +93,42 @@
     border-radius: 6px 6px 0 0;
         
     .pagination-btn, .page-number-btn {
-     background-color: $primary-color;
-            color: white;
-            padding: 8px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.2s;
+        background-color: $primary-color;
+        color: white;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.2s;
 
-            &:disabled {
-                background-color: color.adjust($primary-color, $lightness: 20%);
-                cursor: not-allowed;
-            }
-
-            &:hover:not(:disabled) {
-                background-color: color.adjust($primary-color, $lightness: -10%); 
-            }
+        &:disabled {
+            background-color: color.adjust($primary-color, $lightness: 20%);
+            cursor: not-allowed;
         }
 
-        .page-number-btn {
-            width: 40px;
-            padding: 8px;
+        &:hover:not(:disabled) {
+            background-color: color.adjust($primary-color, $lightness: -10%); 
         }
+    }
 
-        .page-number-btn.active-page {
-            /* Estilo para a página atual */
-            background-color: white; 
-            color: $primary-color;
-            border: 2px solid $primary-color;
-            font-weight: bold;
-        }
+    .page-number-btn {
+        width: 40px;
+        padding: 8px;
+    }
 
-        .page-status {
-            font-size: 16px;
-            font-weight: 500;
-            margin: 0 10px;
-        }
-    
+    .page-number-btn.active-page {
+        background-color: white; 
+        color: $primary-color;
+        border: 2px solid $primary-color;
+        font-weight: bold;
+    }
+
+    .page-status {
+        font-size: 16px;
+        font-weight: 500;
+        margin: 0 10px;
+    }
 }
 
 

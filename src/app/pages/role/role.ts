@@ -3,8 +3,6 @@ import { Component, OnInit } from '@angular/core';
 import { AddCompanyModalComponent } from '../../components/add-company-modal/add-company-modal';
 import { Role, RoleService } from '../../services/role.service';
 import { Company, CompanyService } from '../../services/company.service';
-import { AttachRoleEmployeeModal } from '../../components/attach-role-employee-modal/attach-role-employee-modal';
-import { AttachRoleEmployeeService } from '../../services/attach-role-employee.service';
 import { NotificationService } from '../../services/notification.service';
 
 interface GroupedRoles {
@@ -15,23 +13,22 @@ interface GroupedRoles {
 
 @Component({
   selector: 'app-role',
-  imports: [CommonModule, AddCompanyModalComponent, AttachRoleEmployeeModal],
+  imports: [CommonModule, AddCompanyModalComponent],
   templateUrl: './role.html',
   styleUrl: './role.scss'
 })
 
-
 export class RoleComponent implements OnInit {
   searchTerm1 = '';
   searchTerm2 = ''; 
+
   roles: Role[] = [];
   groupedRoles: GroupedRoles[] = [];
+  
   showModal = false;
 
   errorMessage: string | null = null;
   successMessage: string | null = null;
-
-  isAttachModalOpen = false;
   
   saving = false;
 
@@ -45,25 +42,8 @@ export class RoleComponent implements OnInit {
   constructor(
     private roleService: RoleService,
     private companyService: CompanyService,
-    private attachRoleEmployeeService: AttachRoleEmployeeService,
     private notificationService: NotificationService
   ) {}
-
-
-  openAttachModal() {
-    this.isAttachModalOpen = true;
-  }
-
-  closeAttachModal() {
-    this.isAttachModalOpen = false;
-  }
-
-  onAttachSave(data: { status: string; workregime: string; employeeName: string; roleName: string }) {
-    const statusBoolean = data.status.toLowerCase() === 'true';
-    const workregimeInt = parseInt(data.workregime, 10);
-    this.attachRoleToEmployee(statusBoolean, workregimeInt, data.employeeName, data.roleName);
-    this.isAttachModalOpen = false;
-  }
 
   ngOnInit() {
     this.loadRoles();
@@ -84,7 +64,6 @@ export class RoleComponent implements OnInit {
 
     this.currentPage = 1; 
     
-    
     if (!nameTerm && !cnpjTerm) {
       this.loadRoles();
       return;
@@ -102,16 +81,20 @@ export class RoleComponent implements OnInit {
         .subscribe(handleSearchResponse);
     } else if (cnpjTerm) {
       this.roleService.searchRolesByCnpj(cnpjTerm).subscribe({
-          next: handleSearchResponse
+          next: handleSearchResponse, 
+          error: (err) => this.notificationService.showError("CNPJ not found ")
+
         })
+
     } else if (nameTerm) {
         this.roleService.searchRoles(nameTerm).subscribe({
-          next: handleSearchResponse
+          next: handleSearchResponse,
+          error: (err) => this.notificationService.showError("Name not found ")
+
       })
     }
   }
 
-  
   addRole(roleName: string, companyName: string) {
     this.saving = true;
 
@@ -134,10 +117,14 @@ export class RoleComponent implements OnInit {
 
             this.saving = false;
             this.showModal = false;
-            this.showNotification("Role created successfully", true);
+            this.notificationService.showSuccess("Role created successfully");
           }
         });
-      }
+      }, error: (err) => {
+        this.saving = false;
+        this.showModal = false;
+        this.notificationService.showError("Error finding company: " + err.message);
+      } 
     });
   }
 
@@ -171,9 +158,9 @@ export class RoleComponent implements OnInit {
   }
 
   nextPage() {
-      if (this.currentPage < this.totalPages) {
-          this.goToPage(this.currentPage + 1);
-      }
+    if (this.currentPage < this.totalPages) {
+        this.goToPage(this.currentPage + 1);
+    }
   }
 
   previousPage() {
@@ -184,68 +171,5 @@ export class RoleComponent implements OnInit {
   
   openModal() {
     this.showModal = true;
-  }
-
-  private showNotification(message: string, typeNotification: boolean) {
-    if (typeNotification) {
-      // Sucess notification
-      this.successMessage = message;
-      setTimeout(() => this.successMessage = null, 3000);
-
-
-    } else {
-      // Error notification
-      this.errorMessage = message;
-      setTimeout(() => this.errorMessage = null, 3000);
-    }
-  }
-
-  attachRoleToEmployee(status: boolean, workregime: number, employeeName: string, roleName: string) {
-    this.attachRoleEmployeeService.getEmployeeByName(employeeName).subscribe({
-      next: (employees) => {
-        if (!employees || employees.length === 0) {
-          return;
-        }
-        const employee = employees[0];
-
-        this.attachRoleEmployeeService.getRoleByName(roleName).subscribe({
-          next: (roles) => {
-            if (!roles || roles.length === 0) {
-              return;
-            }
-            
-            const role = roles[0];
-            console.log('EmployeeID:', employee.id);
-            console.log('RoleName:', role.name);
-            
-            const attachData = {
-              status: status,
-              workRegime: workregime,
-              employeeId: (employee as any).id,
-              roleId: (role as any).id
-            };
-            
-            this.attachRoleEmployeeService.attachRoleToEmployee(attachData).subscribe({
-              next: () => {
-                this.notificationService.showSuccess('Role successfully attached to employee!');
-              },
-              /*,
-              error: (err) => {
-                const backendMessage = err?.error?.message || 'Error while attaching role to employee.';
-                //this.showNotification('Error while attaching role to employee.', false);
-                this.showNotification(backendMessage, false);
-              }*/
-            });
-          }/*,
-          error: () => {
-            this.showNotification(`Error searching for role "${roleName}".`, false);
-          }*/
-        });
-      }/*,
-      error: () => {
-        this.showNotification(`Error searching for employee "${employeeName}".`, false);
-      }*/
-
-    });
   }
 }

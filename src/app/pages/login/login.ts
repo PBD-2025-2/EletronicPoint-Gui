@@ -4,9 +4,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { PrimaryInput } from '../../components/primary-input/primary-input';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { ToastrService } from 'ngx-toastr';
-
-
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-login',
@@ -27,7 +25,8 @@ export class Login {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private toastService: ToastrService) {    
+    private notificationService: NotificationService,
+  ) {    
     this.loginForm = new FormGroup({
       email: new FormControl(''),
       password: new FormControl('', [Validators.required, Validators.minLength(6)])
@@ -38,16 +37,17 @@ export class Login {
     this.authService.login(this.loginForm.value.email, this.loginForm.value.password).subscribe({
       next: (response) => {
         console.log('Login success:', response);
-        this.toastService.success("Login finished sucessfully!")
+        this.notificationService.showSuccess("Login finished sucessfully!")
         this.router.navigate(['/menu'])
       },
+
       error: (error) => {
         console.error('Login error details:', error); 
-        this.toastService.error("An error has occured. Try again later")
+        this.notificationService.showError("An error has occured. Try again later")
       }
     })
   }
-
+  
   navigate(){
     this.router.navigate(["signup"])
   }

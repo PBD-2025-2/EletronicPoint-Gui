@@ -1,8 +1,3 @@
-<!-- <app-notification [message]="errorMessage" type="error"></app-notification> -->
-<!--<app-notification [message]="successMessage" type="success"></app-notification> -->
-
-
-
 <section class="find-section">
     <div class="search-container">
         <input
@@ -24,9 +19,6 @@
     <button 
         class="add-role-btn"
         (click)="openModal()">Add</button>
-    <button 
-        class="attach-role-btn"
-        (click)="openAttachModal()">Attach Role to Employee</button>
 
     <app-add-company-modal
         *ngIf="showModal"
@@ -38,13 +30,6 @@
         (saveItem)="addRole($event.name, $event['companyName'])">
     </app-add-company-modal>
 
-    <app-attach-role-employee-modal
-        *ngIf="isAttachModalOpen"
-        (closeModal)="closeAttachModal()"
-        (saveItem)="onAttachSave($event)"
-    ></app-attach-role-employee-modal>
-
-
 </section>
 
 <section class="roles-section">
@@ -52,6 +37,7 @@
     <label>
         Companies
     </label>
+
     <div class="company-item" *ngFor="let group of groupedRoles">
         <div class="company-header" (click)="group.expanded = !group.expanded"> {{ group.companyName }}
             <span class="toggle-icon" [class.open]="group.expanded">▶</span>
@@ -61,7 +47,7 @@
             <div class="role-item" *ngFor="let role of group.roles"> {{ role.name }} </div>
         </div>
   </div>
-</div>
+  </div>
 </section>
 
 <div class="pagination-controls" *ngIf="totalItems > pageSize">

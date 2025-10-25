@@ -1,0 +1,110 @@
+
+<section class="find-section">
+    <div class="search-container">
+        <input
+            type="text" 
+            (input)="searchTerm1 = $event.target.value"
+            class="input-search-roster1" 
+            placeholder="Enter rosterName or an ID"/>
+
+        <button 
+        class="search-roster-btn" 
+        (click)="searchRoster()">Search</button>
+    </div>
+
+    <button class="add-roster-btn" (click)="openAttachModal()">Create roster</button>
+
+     <app-create-new-roster-modal
+        *ngIf="isAttachModalOpen"
+        (closeModal)="closeAttachModal()"
+        (saveItem)="handleSaveItem($event)">
+      </app-create-new-roster-modal>
+</section>
+
+
+<section class="roster-section">
+  <div class="roster-list">
+    <label>Rosters</label>
+
+    <div class="roster-item" *ngFor="let group of groupedRosters">
+      <!-- Cabeçalho do grupo -->
+      <div class="roster-header" (click)="group.expanded = !group.expanded"> {{ group.rosterName }}
+        <span class="toggle-icon" [class.open]="group.expanded">▶</span>
+      </div>
+
+      <!-- Sublista: aparece apenas quando expandido -->
+       <div class="roster-sublist" [class.expanded]="group.expanded">
+
+
+        <div class="roster-details" *ngFor="let roster of group.rosters">
+          <div><strong>Type:</strong> {{ roster.type }}</div>
+          <div><strong>Weekly Workload:</strong> {{ roster.weeklyWorkload }} hrs</div>
+          
+          <div *ngIf="roster.dailySchedules?.length">
+            <div><strong>Daily schedules:</strong></div>
+
+            <ul>
+              <li *ngFor="let day of roster.dailySchedules">
+                <strong>{{ day.day }}:</strong>
+                <span *ngIf="day.schedules.length; else noSchedules">
+                  {{ day.schedules.join(', ') }}
+                </span>
+                <ng-template #noSchedules>
+                  <em>No schedules</em>
+                </ng-template>
+              </li>
+            </ul>
+          </div>
+
+          <div *ngIf="roster.dutySchedules?.length">
+            <div><strong>Duty schedules:</strong></div>
+
+            <ul>
+              <li *ngFor="let duty of roster.dutySchedules">
+                <strong>Start Time:</strong> {{ duty.startTime }}, 
+                <strong>Work Duration:</strong> {{ duty.workDuration }} hrs, 
+                <strong>Time Off:</strong> {{ duty.timeOff }} hrs
+              </li>
+            </ul>
+          </div>
+          
+
+
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<div class="pagination-controls" *ngIf="totalItems > pageSize">
+  
+  <button 
+    (click)="previousPage()" 
+    [disabled]="currentPage === 1"
+    class="pagination-btn">
+    &laquo; Previous
+  </button>
+
+  <ng-container *ngFor="let pageNum of [].constructor(totalPages); let i = index">
+    <button
+      (click)="goToPage(i + 1)"
+      [class.active-page]="currentPage === i + 1"
+      class="page-number-btn">
+      {{ i + 1 }}
+    </button>
+  </ng-container>
+
+  <span class="page-status">
+    Page {{ currentPage }}/{{ totalPages }}
+  </span>
+
+  <button 
+    (click)="nextPage()" 
+    [disabled]="currentPage === totalPages || totalPages === 0"
+    class="pagination-btn">
+    Next &raquo;
+  </button>
+</div>

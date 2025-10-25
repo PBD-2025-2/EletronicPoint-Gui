@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Employee, EmployeeService } from '../../services/employee.service';
 import { AddCompanyModalComponent } from '../../components/add-company-modal/add-company-modal';
 import { CommonModule } from '@angular/common';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-employee',
@@ -21,9 +22,9 @@ export class EmployeeComponent implements OnInit {
 
   constructor (
     private employeeService: EmployeeService,
+    private notificationService: NotificationService
   ) {}
 
-  
     // Pagination variables
     currentPage: number = 1;
     itemsPerPage: number = 10; 
@@ -52,13 +53,11 @@ export class EmployeeComponent implements OnInit {
       }
     }
 
-
   private showNotification(message: string, typeNotification: boolean) {
     if (typeNotification) {
       // Sucess notification
       this.successMessage = message;
       setTimeout(() => this.successMessage = null, 3000);
-
 
     } else {
       // Error notification
@@ -89,8 +88,9 @@ export class EmployeeComponent implements OnInit {
         this.employees = data;
         this.currentPage = 1; 
       },
+
       error: (err) => {
-        this.showNotification("Error while doing search! Employee not found.", false);
+        this.notificationService.showError("Error while doing search! Employee not found.");
       }
     });
   }
@@ -112,10 +112,13 @@ export class EmployeeComponent implements OnInit {
         this.currentPage = this.totalPages; // Move to last page
         this.saving = false;
         this.showModal = false;
+        this.notificationService.showSuccess('Employee created successfully!');
       }, 
+      
       error: (err) => {
-        this.showNotification('Error while creating Employee', false);
         this.saving = false;
+        this.showModal = false;
+        this.notificationService.showError('Error while creating Employee');
       }
     });
   }

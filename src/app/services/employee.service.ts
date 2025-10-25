@@ -45,7 +45,6 @@ export class EmployeeService {
         safeGet(urlByCpf),
         safeGetId(urlById)
     ];
-
     return concat(...requests).pipe(
         filter(arr => Array.isArray(arr) && arr.length > 0), 
         first(),
