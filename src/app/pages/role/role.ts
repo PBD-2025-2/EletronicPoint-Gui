@@ -4,6 +4,9 @@ import { AddCompanyModalComponent } from '../../components/add-company-modal/add
 import { Role, RoleService } from '../../services/role.service';
 import { Company, CompanyService } from '../../services/company.service';
 import { NotificationService } from '../../services/notification.service';
+import { RosterService } from '../../services/register-roster-service';
+import { AttachRoleToEmployee } from '../../components/attach-role-to-employee/attach-role-to-employee';
+
 
 interface GroupedRoles {
   companyName: string;
@@ -13,10 +16,11 @@ interface GroupedRoles {
 
 @Component({
   selector: 'app-role',
-  imports: [CommonModule, AddCompanyModalComponent],
+  imports: [CommonModule, AddCompanyModalComponent, AttachRoleToEmployee],
   templateUrl: './role.html',
   styleUrl: './role.scss'
 })
+
 
 export class RoleComponent implements OnInit {
   searchTerm1 = '';
@@ -26,6 +30,7 @@ export class RoleComponent implements OnInit {
   groupedRoles: GroupedRoles[] = [];
   
   showModal = false;
+  showModalAttachRole = false;
 
   errorMessage: string | null = null;
   successMessage: string | null = null;
@@ -38,11 +43,11 @@ export class RoleComponent implements OnInit {
   totalItems = 0; 
   totalPages = 0; 
 
-
   constructor(
     private roleService: RoleService,
+    private rosterService: RosterService,
     private companyService: CompanyService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
   ) {}
 
   ngOnInit() {
@@ -171,5 +176,9 @@ export class RoleComponent implements OnInit {
   
   openModal() {
     this.showModal = true;
+  }
+
+  openModal2() {
+    this.showModalAttachRole = true;
   }
 }

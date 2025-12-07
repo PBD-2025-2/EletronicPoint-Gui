@@ -55,4 +55,16 @@ export class EmployeeService {
   addEmployee(employee: Omit<Employee, 'id'>): Observable<Employee> {
         return this.http.post<Employee>(this.apiUrl, employee);
   } 
+
+  getEmployeeByName(name: string): Observable<any> {
+    const encoded = encodeURIComponent(name.trim());
+    return this.http.get<any[]>(`${this.apiUrl}/name/${encoded}`).pipe(
+      map(arr => {
+        if (!arr || arr.length === 0) {
+          throw new Error('Employee not found');
+        }
+        return arr[0];
+      })
+    );
+  }
 }

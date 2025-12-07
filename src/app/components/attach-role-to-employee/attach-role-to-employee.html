@@ -1,0 +1,56 @@
+<div class="modal-overlay" (click)="closeAttach()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>{{ title }}</h2>
+
+    <form class="form-section">
+      <label>
+        Status:
+        <input
+          placeholder="Status"
+          type="text"
+          [(ngModel)]="status"
+          name="status"
+          required
+        />
+      </label>
+
+      <label>
+        RosterName:
+        <input
+          placeholder="RosterName"
+          type="text"
+          [(ngModel)]="rosterName"
+          name="rosterName"
+          required
+        />
+      </label>
+      
+      <label>
+        EmployeeName:
+        <input
+          placeholder="employeeName"
+          type="text"
+          [(ngModel)]="employeeName"
+          name="employeeName"
+          required
+        />
+      </label>
+      
+      <label>
+        RoleName:
+        <input
+          placeholder="roleName"
+          type="text"
+          [(ngModel)]="roleName"
+          name="roleName"
+          required
+        />
+      </label>
+
+      <div class="actions">
+        <button type="button" (click)="closeAttach()">CANCEL</button>
+        <button type="button" (click)="saveAttach()">SAVE</button>
+      </div>
+    </form>
+  </div>
+</div>

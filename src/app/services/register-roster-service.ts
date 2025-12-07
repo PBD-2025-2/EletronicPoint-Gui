@@ -6,6 +6,7 @@ import { map } from 'rxjs/operators';
 import { environment } from '../environments/environment';
 
 export interface Roster {
+  id: number
   name: string;
   type: string;
   weeklyWorkload: number;
@@ -22,6 +23,7 @@ export interface Roster {
 }
 
 export interface RosterDuty {
+  id: number;
   name: string;
   weeklyWorkload: number;
   dailySchedules: {
@@ -32,6 +34,7 @@ export interface RosterDuty {
 }
 
 export interface DailyRoster {
+  id: number;
   name: string;
   type: string;
   weeklyWorkload: number;
@@ -95,8 +98,8 @@ export class RosterService {
     );
   }
   
-  searchRosterById(rosterId: string): Observable<Roster[]> {
-    const encId = encodeURIComponent(rosterId.trim());
+  searchRosterById(idRoster: string): Observable<Roster[]> {
+    const encId = encodeURIComponent(idRoster.trim());
     const url = `${this.apiUrlRosters}/id/${encId}`;
 
     return this.http.get<Roster>(url).pipe(
@@ -132,4 +135,22 @@ export class RosterService {
         }}): Observable<RosterDuty> {
           return this.http.post<RosterDuty>(`${this.apiUrlRosters}/duty`, newRosterDuty);
       }
+
+    
+    getRosterByName(rosterName: string): Observable<Roster> {
+      const encoded = encodeURIComponent(rosterName.trim());
+      
+      return this.http.get<Roster>(`${this.apiUrlRosters}/name/${encoded}`).pipe(
+        map(r => {
+          if (!r) {
+            throw new Error('Roster not found');
+          }
+          return r;
+        })
+      );
+    }
+
+    
+
+      
 }

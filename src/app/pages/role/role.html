@@ -20,6 +20,10 @@
         class="add-role-btn"
         (click)="openModal()">Add</button>
 
+    <button 
+        class="attach-role-employee-btn"
+        (click)="openModal2()" >Attach role to employee</button>
+
     <app-add-company-modal
         *ngIf="showModal"
         title="Add Role"
@@ -29,6 +33,12 @@
         (closeModal)="showModal = false"
         (saveItem)="addRole($event.name, $event['companyName'])">
     </app-add-company-modal>
+
+    <app-attach-role-to-employee
+        *ngIf="showModalAttachRole"
+        title="Attach role to employee"
+        (closeModal)="showModalAttachRole = false">
+    </app-attach-role-to-employee>
 
 </section>
 

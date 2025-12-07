@@ -6,30 +6,33 @@ import { catchError, throwError } from 'rxjs';
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const notificationService = inject(NotificationService);
 
-  return next(req).pipe(
-    catchError((error: HttpErrorResponse) => {
-      let message = 'An unexpected error occurred.';
+  return next(req).pipe( catchError((error: HttpErrorResponse) => {
+    let message = 'An unexpected error occurred.';
+    if (error.error) {
 
-      if (error.error) {
-        if (typeof error.error === 'string') {
-          message = error.error;
-        } else if (error.error.message) {
-          message = error.error.message; // Read the ErrorResponse
-        } else if (error.error.error) {
-          message = error.error.error;
-        }
+      if (typeof error.error === 'string') {
+        message = error.error;
+      } 
+      else if (error.error.message) {
+        message = error.error.message;
+      } 
+      
+      else if (error.error.error) {
+        message = error.error.error;
       }
-
-      if (error.status === 0) {
-        message = 'Unable to connect to the server.';
+      
+      else if (error.error.details) {
+        message = error.error.details;
       }
-
-      notificationService.showError(message);
-      // Test
-      console.log("BACK RESPONSE FULL:", error);
-      console.log("BACK MESSAGE:", error.error?.message);
-
-      return throwError(() => new Error(message));
-    })
-  );
+    }
+    
+    if (error.status === 0) {
+      message = 'Unable to connect to the server.';
+    }
+    
+    notificationService.showError(message);
+    return throwError(() => new Error(message));
+  
+  })
+);
 };
