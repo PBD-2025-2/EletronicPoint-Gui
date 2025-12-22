@@ -12,17 +12,10 @@
     </div>
     <button 
         class="add-company-btn"
-        (click)="openModal()">Add</button>
-
-    <app-add-company-modal
-        *ngIf="showModal"
-        title="Add Company"
-        secondLabel="CNPJ"
-        secondPlaceholder="12345678910111"
-        secondKey="cnpj"
-        (closeModal)="showModal = false"
-        (saveItem)="addCompany($event.name, $event['cnpj'])">
-    </app-add-company-modal>
+        (click)="openModal('company')">Add Company</button>
+     <button 
+        class="add-sector-btn"
+        (click)="openModal('sector')">Add Company Sector</button>
 
 </section>
 
@@ -30,11 +23,21 @@
     <div class="company-list">
         <div class="company-item" *ngFor="let company of paginatedCompanies">
             <div class="company-info">
-            <strong>{{ company.name }}</strong>
+            {{ company.name }}
             </div>
         </div>
     </div>
 </section>
+
+<app-add-company-modal
+    *ngIf="showModal"
+    [title]="modalTitle"
+    [secondLabel]="secondLabel"
+    [secondPlaceholder]="secondPlaceholder"
+    [secondKey]="secondKey"
+    (closeModal)="showModal = false"
+    (saveItem)="handleSave($event)">
+</app-add-company-modal>
 
 <div class="pagination-controls" *ngIf="totalPages > 1">
     <button 

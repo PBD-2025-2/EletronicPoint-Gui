@@ -5,6 +5,24 @@ import { of, concat } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../environments/environment';
 
+export interface RosterApi {
+  id: number;
+  name: string;
+  type: string;
+  weeklyWorkload: number;
+
+  schedules?: {
+    day: string;
+    schedules: string[];
+  }[];
+
+  dutySchedules?: {
+    startTime: string;
+    workDuration: number;
+    timeOff: number;
+  }[];
+}
+
 export interface Roster {
   id: number
   name: string;
@@ -12,14 +30,14 @@ export interface Roster {
   weeklyWorkload: number;
   dailySchedules: {
       day: string,
-      schedules: [string]
+      schedules: string[]
   }[];
-  dutySchedules: [
+  dutySchedules: 
   {
     startTime: string,
     workDuration: number,
     timeOff: number
-  }]
+  }[];
 }
 
 export interface RosterDuty {
@@ -40,7 +58,7 @@ export interface DailyRoster {
   weeklyWorkload: number;
   dailySchedules: {
       day: string,
-      schedules: [string]
+      schedules: string[]
     }[];
 }
 
@@ -55,32 +73,29 @@ export class RosterService {
   getRosters(): Observable<Roster[]> {
     return this.http.get<Roster[]>(this.apiUrlRosters);
   }
-  
-  searchRoster(term: string): Observable<Roster[]> {
-    const encodedTerm = encodeURIComponent(term.trim());
-    const urlByName = `${this.apiUrlRosters}/name/${encodedTerm}`;
-    const urlById   = `${this.apiUrlRosters}/id/${encodedTerm}`;
-  
-    const safeGet = (url: string) =>
-      this.http.get<Roster[]>(url).pipe(catchError(err => throwError(() => err)));
-  
-    const safeGetId = (url: string) =>
-      this.http.get<Roster>(url).pipe(
-        map(c => c ? [c] : []),
-        catchError(err => throwError(() => err))
-    );
-  
-    const requests = [
-      safeGet(urlByName),
-      safeGetId(urlById)
-    ];
-  
-    return concat(...requests).pipe(
-      filter(arr => Array.isArray(arr) && arr.length > 0), 
-      first(),
-      defaultIfEmpty([]) 
+
+
+   searchRoster(term: string): Observable<Roster[]> {
+    const trimmed = term.trim();
+    
+        // Input with only numbers
+        if (/^\d+$/.test(trimmed)) {
+
+          // Search by ID
+          return this.searchRosterById(trimmed);
+        }
+
+        // Search by name
+        return this.searchRosterByName(term);
+  }
+
+
+  searchRosterById(idRoster: string): Observable<Roster[]> {
+    return this.http.get<Roster>(`${this.apiUrlRosters}/id/${idRoster}`).pipe(
+      map(c => c ? [c] : [])
     );
   }
+
 
   searchRosterByName(rosterName: string): Observable<Roster[]> {
     const encName = encodeURIComponent(rosterName.trim());
@@ -97,32 +112,16 @@ export class RosterService {
       catchError(err => throwError(() => err))
     );
   }
-  
-  searchRosterById(idRoster: string): Observable<Roster[]> {
-    const encId = encodeURIComponent(idRoster.trim());
-    const url = `${this.apiUrlRosters}/id/${encId}`;
 
-    return this.http.get<Roster>(url).pipe(
-      map(r => {
-        if (!r) {
-          throw new Error("RosterID not found")
-        }
-        return [r]
-      }),
-      catchError(err => throwError(() => err))
-    );
+   createDailyRoster(newDailyRoster: { 
+    name: string; 
+    weeklyWorkload: number; 
+    schedules: { day: string; schedules: string[] }[]; // <- agora string[]
+  }): Observable<DailyRoster> {
+    return this.http.post<DailyRoster>(`${this.apiUrlRosters}/daily`, newDailyRoster);
   }
 
-   createDailyRoster(
-      newDailyRoster: { 
-        name: string; 
-        weeklyWorkload: number; 
-        dailySchedules: {
-          day: string,
-          schedules: [string]
-        }}): Observable<DailyRoster> {
-          return this.http.post<DailyRoster>(`${this.apiUrlRosters}/daily`, newDailyRoster);
-      }
+
 
     createRosterDuty(
       newRosterDuty: { 

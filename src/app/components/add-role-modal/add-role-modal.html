@@ -1,0 +1,45 @@
+<div class="modal-overlay" (click)="closeAddRole()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>{{ title }}</h2>
+
+    <form class="form-section">
+      <label>
+        Role Name:
+        <input
+          placeholder="Name"
+          type="text"
+          [(ngModel)]="name"
+          name="name"
+          required
+        />
+      </label>
+
+      <label>
+        Company Name:
+        <input
+          placeholder="CompanyName"
+          type="text"
+          [(ngModel)]="companyName"
+          name="companyName"
+          required
+        />
+      </label>
+
+      <label>
+        Company Sector:
+        <input
+          placeholder="SectorName"
+          type="text"
+          [(ngModel)]="sectorName"
+          name="sectorName"
+          required
+        />
+      </label>
+
+      <div class="actions">
+        <button type="button" (click)="closeAddRole()">CANCEL</button>
+        <button type="button" (click)="saveAddRole()">SAVE</button>
+      </div>
+    </form>
+  </div>
+</div>

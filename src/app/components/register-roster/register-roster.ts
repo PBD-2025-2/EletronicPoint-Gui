@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NotificationService } from '../../services/notification.service';
 import { Roster, RosterService } from '../../services/register-roster-service';
 import { CreateNewRosterModal } from '../create-new-roster-modal/create-new-roster-modal';
+import { RosterMapper } from '../roster.mapper.ts/roster.mapper.ts';
 
 @Component({
   selector: 'app-register-roster',
@@ -25,7 +26,6 @@ export class RegisterRoster {
     expanded: boolean;
   }[] = [];
 
-  // Pagination variables
   currentPage = 1;
   pageSize = 10;
   totalItems = 0; 
@@ -42,18 +42,9 @@ export class RegisterRoster {
   }
 
   loadRosters() {
-    this.rosterService.getRosters().subscribe(res => {
-      this.rosters = res;
+    this.rosterService.getRosters().subscribe(apiRosters => {
 
-      // Make sure that dutySchedules is always an array
-      this.rosters = res.map(r => {
-        if (r.dutySchedules && !Array.isArray(r.dutySchedules)) {
-          r.dutySchedules = [r.dutySchedules];
-        }
-        return r;
-      });
-      
-      //this.groupRosters();
+      this.rosters = RosterMapper.fromApiList(apiRosters);
       this.totalItems = this.rosters.length;
       this.totalPages = Math.ceil(this.totalItems / this.pageSize);
       this.paginateAndGroupRosters();
@@ -112,7 +103,7 @@ export class RegisterRoster {
       this.paginateAndGroupRosters();
     };
     
-    return this.rosterService.searchRosterByName(nameTerm)
+    return this.rosterService.searchRoster(nameTerm)
       .subscribe(handleSearchResponse)
   }
 
@@ -123,11 +114,9 @@ export class RegisterRoster {
       this.createDailyRoster(rosterName, weeklyWorkload, dailySchedules);
       
     } else if (dutySchedules) {
-      // Chamada para duty
       this.createRosterDuty(rosterName, weeklyWorkload, dutySchedules);
     }
   }
-
 
   openAttachModal() {
     this.isAttachModalOpen = true;
@@ -137,8 +126,15 @@ export class RegisterRoster {
     this.isAttachModalOpen = false;
   }
 
-  createRosterDuty(name: string, weeklyWorkload: number, dutySchedules: { startTime: string, workDuration: string, timeOff: string }) {
-    
+  createRosterDuty(
+    name: string,
+    weeklyWorkload: number,
+    dutySchedules: { 
+      startTime: string,
+      workDuration: string,
+      timeOff: string }
+    ) {
+
     this.saving = true;
     const newRosterDuty = {
       name: name, 
@@ -165,11 +161,21 @@ export class RegisterRoster {
     });
   }
 
-  createDailyRoster(name: string, weeklyWorkload: number, dailySchedules: { day: string, schedules: [string] }) {
+  createDailyRoster(
+    name: string,
+    weeklyWorkload: number, 
+    dailySchedules: { 
+      day: string,
+      schedules: string[] 
+    }[]
+  ) {
     this.saving = true;
+     const newDailyRoster = {
+      name,
+      weeklyWorkload,
+      schedules: dailySchedules
+    };
 
-    const newDailyRoster = {name: name, weeklyWorkload: weeklyWorkload, dailySchedules: dailySchedules };
-        
     this.rosterService.createDailyRoster(newDailyRoster).subscribe({
       next: (created) => {
         this.closeAttachModal();

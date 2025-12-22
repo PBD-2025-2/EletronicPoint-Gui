@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CompanyService, Company } from '../../services/company.service';
+import { CompanyService, Company, Sector } from '../../services/company.service';
 import { AddCompanyModalComponent } from '../../components/add-company-modal/add-company-modal';
 import { NotificationService } from '../../services/notification.service';
-
 
 @Component({
   selector: 'app-company',
@@ -19,39 +18,23 @@ export class CompanyComponent implements OnInit {
   showModal = false;
   errorMessage: string | null = null;
   successMessage: string | null = null;
-  saving = false; // Moved up for clarity
+  saving = false; 
 
   constructor(
     private companyService: CompanyService,
     private notificationService: NotificationService
   ) {}
 
-  // Pagination variables
+  modalType: 'company' | 'sector' = 'company';
+
+  modalTitle = '';
+  secondLabel = '';
+  secondPlaceholder = '';
+  secondKey = '';
+
   currentPage: number = 1;
   itemsPerPage: number = 10; 
 
-  // Paginated list getter
-  get paginatedCompanies(): Company[] {
-    const start = (this.currentPage - 1) * this.itemsPerPage;
-    return this.companies.slice(start, start + this.itemsPerPage);
-  }
-
-  // Total pages getter
-  get totalPages(): number {
-    return Math.ceil(this.companies.length / this.itemsPerPage);
-  }
-
-  // page buttons method
-  getPagesArray(): number[] {
-    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
-  }
-
-  // Change pagination
-  changePage(page: number) {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-    }
-  }
 
   ngOnInit() {
     this.loadCompanies();
@@ -70,21 +53,72 @@ export class CompanyComponent implements OnInit {
       this.loadCompanies();
       return;
     }
+
+    console.log("Searching for companies with term:", term);
     this.companyService.searchCompanies(term).subscribe({
       next: (data) => {
+        
         this.companies = data;
+        console.log("Search results:", data);
         this.currentPage = 1;
         }, 
 
       error: (err) => {
-          this.notificationService.showError("Error while doing search! Company not found");
+          this.notificationService.showError(err.message);
         }
       });
     }
 
-    openModal() {
+    openModal(type: 'company' | 'sector') {
+      console.log("Calling openModal2 with type:", type);
+      this.modalType = type;
       this.showModal = true;
-      console.log(this.showModal)
+
+      if (type === 'company') {
+        this.modalTitle = 'Add Company';
+        this.secondLabel = 'CNPJ';
+        this.secondPlaceholder = '12345678910111';
+        this.secondKey = 'cnpj';
+      } else {
+        this.modalTitle = 'Add Sector';
+        this.secondLabel = 'Company Name';
+        this.secondPlaceholder = 'Company name';
+        this.secondKey = 'companyName';
+      }
+    }
+
+    handleSave(event: any) {
+      this.saving = true;
+
+      if (this.modalType === 'company') {
+        this.addCompany(event.name, event.cnpj);
+        return;
+      }
+
+      this.companyService.getCompanyByName(event.companyName).subscribe({
+        next: (company) => {
+          const newSector: Sector = {
+            name: event.name,
+            companyId: company.id
+          };
+
+          this.companyService.addCompanySector(newSector).subscribe({
+            next: () => {
+              this.notificationService.showSuccess("Sector created successfully.");
+              this.saving = false;
+              this.showModal = false;
+            },
+            error: () => {
+              this.notificationService.showError("Error while creating sector.");
+              this.saving = false;
+            }
+          });
+        },
+        error: () => {
+          this.notificationService.showError("Company not found.");
+          this.saving = false;
+        }
+      });
     }
 
     addCompany(name: string, cnpj: string) {
@@ -107,4 +141,25 @@ export class CompanyComponent implements OnInit {
         }
       });
     }
+
+
+  get paginatedCompanies(): Company[] {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    return this.companies.slice(start, start + this.itemsPerPage);
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.companies.length / this.itemsPerPage);
+  }
+
+  getPagesArray(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  changePage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+  
 }

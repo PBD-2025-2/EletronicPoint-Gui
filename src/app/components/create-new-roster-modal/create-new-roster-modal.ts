@@ -16,7 +16,7 @@ export class CreateNewRosterModal {
   rosterName: string = '';
   weeklyWorkload: number | null = null;
 
-  rosterType: 'daily' | 'duty' = 'daily'; // default
+  rosterType: 'daily' | 'duty' = 'daily';
 
   constructor(private notificationService: NotificationService) {}
 
@@ -53,18 +53,15 @@ export class CreateNewRosterModal {
       };
     }>();
 
-
   close() {
     this.closeModal.emit();
   }
 
-  // Add new day (maximum 7)
   addDay() {
     if (this.dailySchedules.length >= 7) return;
     this.dailySchedules.push({ day: '', schedules: [{ start: '', end: '' }] });
   }
 
-  // Add new interval (maximum 2 per day)
   addSchedule(dayIndex: number) {
     if (this.dailySchedules[dayIndex].schedules.length >= 2) return;
     this.dailySchedules[dayIndex].schedules.push({ start: '', end: '' });
@@ -85,22 +82,18 @@ export class CreateNewRosterModal {
   
   if (this.rosterType === 'daily') {
 
-    // days and intervals validation
     const validDays = this.dailySchedules
       .filter(d => d.day.trim()) // day name is necessary
       .map(d => ({
         day: d.day.trim(),
 
-        // Keep only complete and valid intervals
         schedules: d.schedules
           .filter(s => s.start && s.end)
           .map(s => `${s.start}-${s.end}`)
       }))
 
-      // Only keep days with at least one complete interval
       .filter(d => d.schedules.length > 0);
 
-    // Make sure that creation is not gonna happen if there's any incomplete interval time
     const hasIncomplete = this.dailySchedules.some(d =>
       d.schedules.some(s => (s.start && !s.end) || (!s.start && s.end))
     );
@@ -114,11 +107,16 @@ export class CreateNewRosterModal {
       this.notificationService.showError("Please provide at least one day with valid schedules.");
       return;
     }
+
+    const mappedSchedules = this.dailySchedules.map(d => ({
+      day: d.day,
+      schedules: d.schedules.filter(s => s.start && s.end).map(s => `${s.start}-${s.end}`)
+    }));
     
     this.saveItem.emit({
       rosterName: this.rosterName,
       weeklyWorkload: this.weeklyWorkload,
-      dailySchedules: validDays
+      dailySchedules: mappedSchedules
     });
   } else if (this.rosterType === 'duty') {
 

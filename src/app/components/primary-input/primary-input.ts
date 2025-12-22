@@ -36,7 +36,6 @@ export class PrimaryInput implements ControlValueAccessor {
   onChange: any = () => {}
   onTouched: any = () => {}
   
-  // Receives a value
   onInput(event: Event){
     const value = (event.target as HTMLInputElement).value
     this.onChange(value)

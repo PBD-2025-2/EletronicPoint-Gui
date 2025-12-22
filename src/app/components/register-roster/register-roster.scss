@@ -33,9 +33,17 @@
       color: white;
       font-size: 16px;
     }
+
+    &:hover:not(:disabled) {
+      background-color: color.adjust(white); 
+      font-weight: bold;
+      border: 2px solid $primary-color;
+      color: $primary-color;
+      font-weight: bold
+    }
     
     &.add-roster-btn {
-      background-color: $add-btn-color;
+      background-color: $primary-color;
       width: 150px;
       margin-left: auto; 
       color: white;
@@ -44,69 +52,68 @@
   }
 }
 
-
-
 .roster-section {
   .roster-list {
     max-height: 500px;
     overflow-y: auto;
     padding: 12px;
   }
+
   .roster-item {
-      outline: 1px solid $secondary-color;
-      border: none;
+    outline: 1px solid $secondary-color;
+    border: none;
+    border-radius: 8px;
+    margin-bottom: 8px;
+
+    .roster-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      font-size: 18px;
+      cursor: pointer;
+      background-color: white;
+      border: 1px solid $primary-color;
       border-radius: 8px;
-      margin-bottom: 8px;
+      background-color: #fff;
 
-      .roster-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 12px;
-        font-size: 18px;
-        font-weight: bold;
-        cursor: pointer;
-        background-color: white;
-        border: 1px solid $primary-color;
-        border-radius: 8px;
-        background-color: #fff;
-
-        &:hover {
-          background-color: color.adjust($primary-color, $lightness: 8%);
-        }
-
-        .toggle-icon { 
-          transition: transform 0.1s ease-in-out; 
-          &.open { 
-            transform: rotate(90deg); 
-          } 
-        }
-        .update-roster-btn {
-          background: $primary-color;
-        }
+      &:hover {
+        background-color: color.adjust($primary-color, $lightness: 8%);
       }
+
+      .toggle-icon { 
+        transition: transform 0.1s ease-in-out; 
+        &.open { 
+          transform: rotate(90deg); 
+        } 
       }
+
+      .update-roster-btn {
+        background: $primary-color;
+      }
+    }
+  }
 
   .roster-sublist {
-        overflow: hidden;
-        max-height: 0;
-        padding: 0 12px;
-        transition: max-height 0.3s ease, padding 0.3s ease;
+      overflow: hidden;
+      max-height: 0;
+      padding: 0 12px;
+      transition: max-height 0.3s ease, padding 0.3s ease;
 
-        &.expanded {
-          max-height: 1000px; // altura máxima "virtual" suficiente para o conteúdo crescer
-          padding: 12px;
-        }
-
-        .role-item {
-          padding: 8px 0;
-          font-size: 16px;
-          border-bottom: 1px solid $gray-background;
-
-        &:last-child {
-          border-bottom: none;
-        }
+      &.expanded {
+        max-height: 1000px; // altura máxima "virtual" suficiente para o conteúdo crescer
+        padding: 12px;
       }
+
+      .role-item {
+        padding: 8px 0;
+        font-size: 16px;
+        border-bottom: 1px solid $gray-background;
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
   }
 
   .roster-details {

@@ -1,13 +1,14 @@
 <section class="find-section">
     <div class="search-container">
         <input
-            type="text" 
+            type="text"
             (input)="searchTerm = $event.target.value"
-            class="input-search-employee" 
-            placeholder="Enter an ID or a employee name" 
+            class="input-search-employee"
+            placeholder="Enter an ID or employee name"
         />
         <button class="search-btn" (click)="searchEmployees()">Search</button>
     </div>
+
     <button class="add-employee-btn" (click)="openModal()">Add</button>
 
     <app-add-company-modal
@@ -16,23 +17,40 @@
         secondLabel="CPF"
         secondPlaceholder="12345678900"
         secondKey="cpf"
-        (closeModal)="showModal = false"
-        (saveItem)="addEmployee($event.name, $event['cpf'])">
+        (closeModal)="showModal = false">
     </app-add-company-modal>
-
-
 </section>
 
-<section class="employees-section">
-    <div class="employee-list">
-        <div class="employee-item" *ngFor="let employee of paginatedRoles">
-            <div class="employee-info">
-            <strong>{{ employee.name }}</strong>
-            </div>
+<section class="employee-section">
+  <div class="employee-list">
+    <label>Employees</label>
+
+    <div class="employee-item" *ngFor="let group of groups" >
+
+      <div class="employee-header" 
+      [class.disabled]="group.records.length === 0"
+      (click)=" group.records.length > 0 && (group.expanded = !group.expanded)">
+
+        {{ group.employee.employeeName }}
+        <span 
+          class="toggle-icon"
+          *ngIf="group.records.length > 0"
+          >
+          {{ group.expanded ? '▲' : '▼' }}</span>
+      </div>
+
+      <div class="employee-sublist" [class.expanded]="group.expanded" >
+
+      <div class="employee-details" *ngFor="let rec of group.records">
+          <div><strong>Roster:</strong> {{ rec.rosterName }} - {{ rec.rosterType }} - {{ rec.rosterHours }}h</div> 
+          <div><strong>Sector:</strong> {{ rec.sectorName }} ({{ rec.companyName }})</div>
+          <div><strong>Role:</strong> {{ rec.roleName }}</div>
+          <hr />
         </div>
+      </div>
     </div>
+  </div>
 </section>
-
 
 <div class="pagination-controls" *ngIf="totalPages > 1">
     <button 
@@ -41,22 +59,22 @@
         class="pagination-btn">
         &laquo; Previous
     </button>
-        <ng-container *ngFor="let pageNum of getPagesArray()">
-            <button
-                (click)="changePage(pageNum)"
-                [class.active-page]="currentPage === pageNum"
-                class="page-number-btn">
-                {{ pageNum }}
-            </button>
-        </ng-container>
 
-        <span class="page-status"> Page {{ currentPage }}/{{ totalPages }} </span>
-
-        <button 
-            (click)="changePage(currentPage + 1)" 
-            [disabled]="currentPage === totalPages"
-            class="pagination-btn">
-            Next &raquo;
+    <ng-container *ngFor="let pageNum of getPagesArray()">
+        <button
+            (click)="changePage(pageNum)"
+            [class.active-page]="currentPage === pageNum"
+            class="page-number-btn">
+            {{ pageNum }}
         </button>
-</div>
+    </ng-container>
 
+    <span class="page-status"> Page {{ currentPage }}/{{ totalPages }} </span>
+
+    <button 
+        (click)="changePage(currentPage + 1)" 
+        [disabled]="currentPage === totalPages"
+        class="pagination-btn">
+        Next &raquo;
+    </button>
+</div>

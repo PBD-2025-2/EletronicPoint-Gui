@@ -11,7 +11,7 @@ import { FormsModule } from '@angular/forms';
 })
 
 export class AddCompanyModalComponent {
-  @Input() title = 'Add Item';
+  @Input() modalTitle = 'Add Item';
 
   @Input() secondLabel = 'Document';
   @Input() secondPlaceholder = '';

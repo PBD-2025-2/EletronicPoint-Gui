@@ -30,7 +30,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       message = 'Unable to connect to the server.';
     }
     
-    notificationService.showError(message);
+    //notificationService.showError(message);
     return throwError(() => new Error(message));
   
   })

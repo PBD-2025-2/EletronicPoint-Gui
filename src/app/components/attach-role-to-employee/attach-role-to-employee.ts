@@ -48,12 +48,10 @@ export class AttachRoleToEmployee {
       next: (roster) => {
         idRoster = roster.id;
 
-        // Get Employee ID by name
         this.employeeService.getEmployeeByName(this.employeeName).subscribe({
           next: (emp) => {
-            employeeId = emp.id;
+            employeeId = emp[0].id;
 
-            // Get Role ID by name
             this.roleService.searchRoles(this.roleName).subscribe({
               next: (roles) => {
                 if (roles.length === 0) {

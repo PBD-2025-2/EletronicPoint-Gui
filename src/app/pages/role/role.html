@@ -13,8 +13,8 @@
             placeholder="Or the company's CNPJ" 
         />
         <button 
-        class="search-btn" 
-        (click)="searchRoles()">Search</button>
+        class="search-btn"
+        (click)="searchRoles()"> Search</button>
     </div>
     <button 
         class="add-role-btn"
@@ -24,15 +24,13 @@
         class="attach-role-employee-btn"
         (click)="openModal2()" >Attach role to employee</button>
 
-    <app-add-company-modal
-        *ngIf="showModal"
-        title="Add Role"
-        secondLabel="Company Name"
-        secondPlaceholder="Ex.: Google Corp"
-        secondKey="companyName"
-        (closeModal)="showModal = false"
-        (saveItem)="addRole($event.name, $event['companyName'])">
-    </app-add-company-modal>
+    <app-add-role-modal
+      *ngIf="showModal"
+      (saveItem)="addRole($event)"
+      (closeModal)="showModal = false">
+    </app-add-role-modal>
+
+
 
     <app-attach-role-to-employee
         *ngIf="showModalAttachRole"
@@ -54,7 +52,10 @@
         </div>
 
         <div class="role-sublist" [class.expanded]="group.expanded">
-            <div class="role-item" *ngFor="let role of group.roles"> {{ role.name }} </div>
+            <div class="role-item" *ngFor="let role of group.roles"> 
+              <div><strong>Sector: </strong> {{role.sectors.name}} </div>
+              <div><strong>Role: </strong>{{ role.name }} </div>
+            </div>
         </div>
   </div>
   </div>

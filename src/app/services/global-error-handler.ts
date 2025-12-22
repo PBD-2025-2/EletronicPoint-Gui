@@ -7,7 +7,7 @@ export class GlobalErrorHandler implements ErrorHandler {
 
   handleError(error: any): void {
     console.error('Global error:', error);
-    this.notificationService.showError(error.message || 'An unexpected error occurred');
+    //this.notificationService.showError(error.message || 'An unexpected error occurred');
   }
   
 }

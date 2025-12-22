@@ -34,9 +34,23 @@
         }
 
         &.add-company-btn {
-            background-color: $add-btn-color;
+            background-color: $primary-color;
             width: 200px;
             margin-left: auto; 
+            color: white;
+            font-size: 16px;
+        }
+
+        &:hover:not(:disabled) {
+            background-color: color.adjust(white); 
+            font-weight: bold;
+            border: 2px solid $primary-color;
+            color: $primary-color;
+        }
+
+        &.add-sector-btn {
+            background-color: $primary-color;
+            width: 200px;
             color: white;
             font-size: 16px;
         }
@@ -73,6 +87,7 @@
         .company-info {
             display: flex;
             flex-direction: column;
+            
         }
     }
 }

@@ -1,14 +1,31 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, defaultIfEmpty, filter, first, noop, Observable } from 'rxjs';
-import { of, concat } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { catchError, Observable } from 'rxjs';
+import { throwError } from 'rxjs';
 import { environment } from '../environments/environment';
 
-export interface Employee {
+export interface EmployeeRoles {
   id: number;
-  name: string;
-  cpf: string;
+  status: string,
+  roster: {
+    name: string,
+    type: string,
+    weeklyWorkload: string,
+  }
+  employeeName: string,
+  role: {
+    name: string,
+    sectors: {
+      id: number,
+      name: string,
+      company: { name: string }
+    }
+  }
+}
+
+export interface Employee {
+  id: number,
+  name: string
 }
 
 @Injectable({
@@ -16,55 +33,54 @@ export interface Employee {
 })
 
 export class EmployeeService {
-  private apiUrl = `${environment.apiUrl}/eletronicPoint/api/v1/employees`;
+  private apiUrlEmployee = `${environment.apiUrl}/eletronicPoint/api/v1/employees`;
+  private apiUrlEmployeeRoles = `${environment.apiUrl}/eletronicPoint/api/v1/employees_roles`;
 
   constructor(private http: HttpClient) {}
 
-  getEmployees(): Observable<Employee[]> {
-    return this.http.get<Employee[]>(this.apiUrl);
+  getAllEmployees(): Observable<Employee[]> {
+    return this.http.get<Employee[]>(this.apiUrlEmployee).pipe(
+          catchError(err => throwError(() => err)));;
   }
 
-  searchEmployees(term: string): Observable<Employee[]> {
-    
-    const encodedTerm = encodeURIComponent(term.trim());
-    const urlByName = `${this.apiUrl}/name/${encodedTerm}`;
-    const urlByCpf = `${this.apiUrl}/cpf/${encodedTerm}`;
-    const urlById   = `${this.apiUrl}/id/${encodedTerm}`;
-
-    const safeGet = (url: string) =>
-        this.http.get<Employee[]>(url).pipe(catchError(() => of([])));
-
-    const safeGetId = (url: string) =>
-        this.http.get<Employee>(url).pipe(
-        map(c => c ? [c] : []),
-        catchError(() => of([]))
-    );
-
-    const requests = [
-        safeGet(urlByName),
-        safeGet(urlByCpf),
-        safeGetId(urlById)
-    ];
-    return concat(...requests).pipe(
-        filter(arr => Array.isArray(arr) && arr.length > 0), 
-        first(),
-        defaultIfEmpty([]) 
-    );
+  getAllEmployeesRoles(): Observable<EmployeeRoles[]> {
+    return this.http.get<EmployeeRoles[]>(this.apiUrlEmployeeRoles);
   }
 
-  addEmployee(employee: Omit<Employee, 'id'>): Observable<Employee> {
-        return this.http.post<Employee>(this.apiUrl, employee);
-  } 
+  searchEmployees(term: string): Observable<any> {
+    const trimmed = term.trim();
 
-  getEmployeeByName(name: string): Observable<any> {
+    // Input with only numbers
+    if (/^\d+$/.test(trimmed)) {
+
+      if (trimmed.length === 11) {
+       this.getEmployeeByCpf(trimmed);
+      }
+
+      this.getEmployeeById(trimmed);
+    }
+
+    return this.getEmployeeByName(trimmed)
+  }
+
+  getEmployeeByName(name: string): Observable<Employee[]> {
+    return this.http.get<Employee[]>(`${this.apiUrlEmployee}/name/${name}`).pipe(
+          catchError(err => throwError(() => err)));
+  }
+  
+  getEmployeeByCpf(cpf: string): Observable<Employee[]> {
+    return this.http.get<Employee[]>(`${this.apiUrlEmployee}/cpf/${cpf}`).pipe(
+          catchError(err => throwError(() => err)));
+  }
+
+  getEmployeeById(employeeId: string): Observable<Employee> {
+    return this.http.get<Employee>(`${this.apiUrlEmployee}/id/${employeeId}`);
+  }
+
+  getEmployeeRolesByName(name: string): Observable<EmployeeRoles[]> {
     const encoded = encodeURIComponent(name.trim());
-    return this.http.get<any[]>(`${this.apiUrl}/name/${encoded}`).pipe(
-      map(arr => {
-        if (!arr || arr.length === 0) {
-          throw new Error('Employee not found');
-        }
-        return arr[0];
-      })
-    );
+    return this.http.get<EmployeeRoles[]>(
+      `${this.apiUrlEmployeeRoles}/name/${encoded}`).pipe(
+          catchError(err => throwError(() => err)));
   }
 }

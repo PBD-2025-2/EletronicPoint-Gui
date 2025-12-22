@@ -20,9 +20,7 @@ interface SignupForm {
     ReactiveFormsModule,
     PrimaryInput
   ],
-  providers: [
-    AuthService
-  ],
+  providers: [AuthService],
   templateUrl: './signup.html',
   styleUrl: './signup.scss'
 })

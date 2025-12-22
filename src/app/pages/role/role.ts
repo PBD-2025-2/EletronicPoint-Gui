@@ -6,7 +6,8 @@ import { Company, CompanyService } from '../../services/company.service';
 import { NotificationService } from '../../services/notification.service';
 import { RosterService } from '../../services/register-roster-service';
 import { AttachRoleToEmployee } from '../../components/attach-role-to-employee/attach-role-to-employee';
-
+import { AddRoleModal, AddRoleEvent } from '../../components/add-role-modal/add-role-modal';
+import { switchMap, throwError } from 'rxjs';
 
 interface GroupedRoles {
   companyName: string;
@@ -16,32 +17,30 @@ interface GroupedRoles {
 
 @Component({
   selector: 'app-role',
-  imports: [CommonModule, AddCompanyModalComponent, AttachRoleToEmployee],
+  imports: [CommonModule, AddRoleModal, AttachRoleToEmployee],
   templateUrl: './role.html',
   styleUrl: './role.scss'
 })
-
-
 export class RoleComponent implements OnInit {
   searchTerm1 = '';
-  searchTerm2 = ''; 
+  searchTerm2 = '';
 
   roles: Role[] = [];
   groupedRoles: GroupedRoles[] = [];
-  
+
   showModal = false;
   showModalAttachRole = false;
 
   errorMessage: string | null = null;
   successMessage: string | null = null;
-  
+
   saving = false;
 
   // Pagination variables
   currentPage = 1;
-  pageSize = 10;
-  totalItems = 0; 
-  totalPages = 0; 
+  pageSize = 9;
+  totalItems = 0;
+  totalPages = 0;
 
   constructor(
     private roleService: RoleService,
@@ -55,20 +54,28 @@ export class RoleComponent implements OnInit {
   }
 
   loadRoles() {
-    this.roleService.getRoles().subscribe(res => {
-      this.roles = res;
-      this.totalItems = this.roles.length;
-      this.totalPages = Math.ceil(this.totalItems / this.pageSize);
-      this.paginateAndGroupRoles(); 
+    this.roleService.getRoles().subscribe({
+      next: res => {
+        this.roles = res;
+        this.totalItems = this.roles.length;
+        this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+        this.paginateAndGroupRoles();
+      },
+      error: err => {
+        console.error("Erro ao carregar roles:", err);
+        this.notificationService.showError("Erro ao carregar roles");
+      }
     });
   }
 
   searchRoles() {
+    console.log("CALLING SEARCH ROLES");
+
     const nameTerm = this.searchTerm1.trim();
     const cnpjTerm = this.searchTerm2.trim();
 
-    this.currentPage = 1; 
-    
+    this.currentPage = 1;
+
     if (!nameTerm && !cnpjTerm) {
       this.loadRoles();
       return;
@@ -78,80 +85,115 @@ export class RoleComponent implements OnInit {
       this.roles = res;
       this.totalItems = this.roles.length;
       this.totalPages = Math.ceil(this.totalItems / this.pageSize);
-      this.paginateAndGroupRoles(); 
+      this.paginateAndGroupRoles();
     };
-    
+
     if (nameTerm && cnpjTerm) {
       this.roleService.searchRolesByNameAndCnpj(nameTerm, cnpjTerm)
-        .subscribe(handleSearchResponse);
+        .subscribe({ next: handleSearchResponse, error: () => this.notificationService.showError("Erro na busca") });
     } else if (cnpjTerm) {
-      this.roleService.searchRolesByCnpj(cnpjTerm).subscribe({
-          next: handleSearchResponse, 
-          error: (err) => this.notificationService.showError("CNPJ not found ")
+      console.log("SEARCHING BY CNPJ ONLY: ", cnpjTerm);
 
-        })
+      
+      this.roleService.searchRolesByCnpj(cnpjTerm).subscribe({
+        next: handleSearchResponse,
+        error: (err) => this.notificationService.showError("CNPJ not found ")
+      });
 
     } else if (nameTerm) {
-        this.roleService.searchRoles(nameTerm).subscribe({
-          next: handleSearchResponse,
-          error: (err) => this.notificationService.showError("Name not found ")
-
-      })
+      this.roleService.searchRoles(nameTerm).subscribe({
+        next: handleSearchResponse,
+        error: (err) => this.notificationService.showError("Name not found ")
+      });
     }
   }
 
-  addRole(roleName: string, companyName: string) {
+  addRole(event: AddRoleEvent) {
+    if (!event) return;
+
+    const roleName = event.name.trim();
+    const companyName = event.companyName.trim();
+    const sectorName = event.sectorName.trim();
+
+    if (!roleName || !companyName || !sectorName) {
+      this.notificationService.showError('Preencha todos os campos');
+      return;
+    }
+
     this.saving = true;
 
-    // Find the company by it's name
-    this.companyService.getCompanyByName(companyName).subscribe({
-      next: (company) => {
-        
-        const newRole = {name: roleName, companyId: company.id, };
-        
-        // Create the role
-        this.roleService.addRole(newRole).subscribe({
-          next: (created) => {
+    this.companyService.getCompanyByName(companyName).pipe(
 
-            this.roles = [...this.roles, created]; 
-            this.totalItems = this.roles.length;
-            this.totalPages = Math.ceil(this.totalItems / this.pageSize);
-          
-            this.currentPage = this.totalPages > 0 ? this.totalPages : 1; 
-            this.paginateAndGroupRoles();
+      // 1️⃣ pega o companyId
+      switchMap(company => {
+        console.log("COMPANY FOUND:", company);
+        if (!company.id) {
+          return throwError(() => new Error('Empresa encontrada, mas sem ID'));
+        }
 
-            this.saving = false;
-            this.showModal = false;
-            this.notificationService.showSuccess("Role created successfully");
-          }
+        // 2️⃣ usa o endpoint NOVO (SEM FILTRO)
+        return this.roleService.getSectorByNameAndCompany(
+          sectorName,
+          company.id
+        );
+      }),
+
+      // 3️⃣ cria o cargo
+      switchMap(sector => {
+        
+        console.log("SECTOR FOUND:", sector);
+        if (!sector || !sector.id) {
+          return throwError(() => new Error('Sector not found for this company'));
+        }
+
+        return this.roleService.createRole({
+          name: roleName,
+          sectorId: sector.id
         });
-      }, error: (err) => {
-        this.saving = false;
+      })
+
+    ).subscribe({
+      next: () => {
+        this.notificationService.showSuccess('Sector created sucessfully!');
         this.showModal = false;
-        this.notificationService.showError("Error finding company: " + err.message);
-      } 
+        this.saving = false;
+        this.loadRoles();
+      },
+      error: err => {
+        console.error('ERROR ADD ROLE:', err);
+        this.saving = false;
+        this.notificationService.showError(
+          err.message || 'Error while creating Sector'
+        );
+      }
     });
   }
 
+
+
+  
   private paginateAndGroupRoles() {
-    
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
 
-    const rolesForCurrentPage = this.roles.slice(startIndex, endIndex); 
-    
-    const map = new Map<string, Role[]>();
-    rolesForCurrentPage.forEach(r => {
-        const name = r.company?.name || 'N/A'; 
-        if (!map.has(name)) map.set(name, []);
-        map.get(name)!.push(r);
+    const rolesForCurrentPage = this.roles.slice(startIndex, endIndex);
 
+    const map = new Map<string, Role[]>();
+
+    rolesForCurrentPage.forEach(r => {
+      const companyName = r.sectors?.company?.name || 'N/A';
+
+      if (!map.has(companyName)) {
+        map.set(companyName, []);
+      }
+
+      map.get(companyName)!.push(r);
     });
 
     this.groupedRoles = Array.from(map.entries()).map(([companyName, roles]) => ({
-        companyName,
-        roles,
-        expanded: false
+      companyName,
+      roles,
+      expanded: false
     }));
   }
 
@@ -164,7 +206,7 @@ export class RoleComponent implements OnInit {
 
   nextPage() {
     if (this.currentPage < this.totalPages) {
-        this.goToPage(this.currentPage + 1);
+      this.goToPage(this.currentPage + 1);
     }
   }
 
@@ -173,7 +215,7 @@ export class RoleComponent implements OnInit {
       this.goToPage(this.currentPage - 1);
     }
   }
-  
+
   openModal() {
     this.showModal = true;
   }
