@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, catchError, defaultIfEmpty, first, filter } from 'rxjs/operators';
-import { Observable, throwError, of, concat } from 'rxjs';
+import { map, catchError} from 'rxjs/operators';
+import { Observable, throwError} from 'rxjs';
 import { environment } from '../environments/environment';
 
 export interface Company {
@@ -23,7 +23,7 @@ export class CompanyService {
   private apiUrl = `${environment.apiUrl}/eletronicPoint/api/v1/companies`;
   private apirUrlSectors = `${environment.apiUrl}/eletronicPoint/api/v1/sectors`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getCompanies(): Observable<Company[]> {
     return this.http.get<Company[]>(this.apiUrl);
@@ -52,61 +52,13 @@ export class CompanyService {
       catchError(err => throwError(() => err)));
   }
 
-
-
-  /*
-  searchCompanies(term: string): Observable<Company[]> {
-    console.log("Calling searchCompanies with term:", term);
-
-    const encodedTerm = encodeURIComponent(term.trim());
-    const urlByName = `${this.apiUrl}/name/${encodedTerm}`;
-    const urlByCnpj = `${this.apiUrl}/cnpj/${encodedTerm}`;
-    const urlById   = `${this.apiUrl}/id/${encodedTerm}`;
-
-    const safeGet = (url: string) =>
-      this.http.get<Company[]>(url).pipe(catchError(err => throwError(() => err)));
-
-    const safeGetId = (url: string) =>
-      this.http.get<Company>(url).pipe(
-        map(c => c ? [c] : []),
-        catchError(err => throwError(() => err))
-    );
-
-    const requests = [
-      safeGet(urlByName),
-      safeGet(urlByCnpj),
-      safeGetId(urlById)
-    ];
-
-    // Keep the same concat logic you used previously if desired
-    return concat(...requests).pipe(
-      filter(arr => Array.isArray(arr) && arr.length > 0),
-      first(),
-      defaultIfEmpty([])
-    );
-  } */
-
-
-
-  addCompany(company: Omit<Company, 'id'>): Observable<Company> {
-    return this.http.post<Company>(this.apiUrl, company);
-  }
-
-  addCompanySector(sector: Sector): Observable<Sector> {
-    return this.http.post<Sector>(this.apirUrlSectors, sector);
-  }
-  
-  /**
-   * Busca empresa por nome. Aceita resposta como objeto único ou array.
-   * Retorna o primeiro item encontrado (Company).
-   */
   getCompanyByName(name: string): Observable<Company> {
     if (!name) {
       return throwError(() => new Error('Company name is required'));
     }
 
     const encoded = encodeURIComponent(name.trim());
-   
+
     return this.http.get<any>(`${this.apiUrl}/name/${encoded}`).pipe(
       map(res => {
         if (!res) throw new Error("Company not found");
@@ -117,7 +69,6 @@ export class CompanyService {
           throw new Error("Company not found");
         }
 
-        // return a normalized Company (ensure id exists)
         const company = arr[0];
         if (!company.id) {
           throw new Error("Company record doesn't have id");
@@ -128,5 +79,19 @@ export class CompanyService {
     );
   }
 
+  addCompany(company: Omit<Company, 'id'>): Observable<Company> {
+    return this.http.post<Company>(this.apiUrl, company);
+  }
 
+  updateCompany(company: Company): Observable<Company> {
+    return this.http.put<Company>(`${this.apiUrl}/${company.id}`, company);
+  }
+
+  deleteCompany(id: number): Observable<Company> {
+    return this.http.delete<Company>(`${this.apiUrl}/${id}`);
+  }
+
+  addCompanySector(sector: Sector): Observable<Sector> {
+    return this.http.post<Sector>(this.apirUrlSectors, sector);
+  }
 }
