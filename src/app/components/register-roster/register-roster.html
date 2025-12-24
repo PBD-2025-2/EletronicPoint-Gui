@@ -1,3 +1,4 @@
+
 <section class="find-section">
     <div class="search-container">
         <input
@@ -26,13 +27,15 @@
     <label>Rosters</label>
 
     <div class="roster-item" *ngFor="let group of groupedRosters">
-      
+      <!-- Cabeçalho do grupo -->
       <div class="roster-header" (click)="group.expanded = !group.expanded">
         {{ group.rosterName }}
         <span class="toggle-icon" [class.open]="group.expanded">▶</span>
       </div>
 
+      <!-- Sublista: aparece apenas quando expandido -->
        <div class="roster-sublist" [class.expanded]="group.expanded">
+
 
         <div class="roster-details" *ngFor="let roster of group.rosters">
           <div><strong>Type:</strong> {{ roster.type }}</div>
