@@ -1,0 +1,21 @@
+<section class="find-section">
+    <div class="search-container">
+        <!-- <input
+            type="text" 
+            (input)="searchTerm = $event.target.value"
+            class="input-search-company" 
+            placeholder="Enter an ID, a name or a CNPJ" 
+        />
+        <button 
+        class="search-btn" 
+        (click)="searchCompanies()">Search</button> -->
+        
+        <p-menubar [model]="items">
+            <ng-template #start>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="..." fill="var(--primary-color)" />
+                </svg>
+            </ng-template>
+        </p-menubar>
+    </div>
+</section>
