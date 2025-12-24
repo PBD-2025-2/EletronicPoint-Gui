@@ -24,6 +24,12 @@ export interface Role {
   };
 }
 
+export interface RolePutRequest {
+  id: number,
+  name: string,
+  sectorId: number
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -40,26 +46,6 @@ export class RoleService {
     return this.http.get<Role[]>(this.apiRolesUrl);
   }
 
-  /*
-  searchRoles2(term: string): Observable<Role[]> {
-    const trimmed = term.trim();
-    
-      // Input with only numbers
-      if (/^\d+$/.test(trimmed)) {
-  
-        // Search by ID
-        return this.http.get<Role>(`${this.apiRolesUrl}/id/${trimmed}`).pipe(
-          map(c => c ? [c] : [])
-        );
-      }
-
-    // Search by name
-    //return this.http.get<Role[]>(`${this.apiRolesUrl}/name/${encodeURIComponent(trimmed)}`).pipe(catchError(err)
-
-  }
-  */
-
-  // --- search helpers (kept as you had) ---
   searchRoles(term: string): Observable<Role[]> {
     console.log("SEARCH ROLES FOR TERM: ", term);
     const encodedTerm = encodeURIComponent(term.trim());
@@ -82,11 +68,9 @@ export class RoleService {
       safeGet(urlByCnpj)
     ];
 
-    // concat until one returns a non-empty array
-    return (requests as any[]).reduce((acc, req, idx) => {
-      // reuse your pattern with concat outside if needed, but keep simple:
-      return acc; // unused in changed flow; keep original searchRoles logic if needed
-    }, this.http.get<Role[]>(urlByName)); // fallback dummy to satisfy types
+    return (requests as any[]).reduce((acc) => {
+      return acc;
+    }, this.http.get<Role[]>(urlByName));
   }
 
   getRoleByName(name: string): Observable<any> {
@@ -122,51 +106,49 @@ export class RoleService {
       .pipe( catchError(err => throwError(() => err)));
   }
 
-  // POST role (backend expects { name, sectorId } according to your RolePostRequest)
-  addRole(role: { name: string; sectorId: number }): Observable<Role> {
+  addRole(role: {name: string; sectorId: number }): Observable<Role> {
+    console.log("Role Post Request: ", role)
     return this.http.post<Role>(this.apiRolesUrl, role).pipe(
       catchError(err => throwError(() => err))
     );
   }
 
-  getSectorByNameAndCompany(
-    sectorName: string,
-    companyId: number
-  ): Observable<any> {
+  updateRole(rolePutRequest: RolePutRequest): Observable<RolePutRequest>{
+    return this.http.put<RolePutRequest>(`${this.apiRolesUrl}/${rolePutRequest.id}`, rolePutRequest)
+  }
+
+  deleteRole(id: number): Observable<Role> {
+      return this.http.delete<Role>(`${this.apiRolesUrl}/${id}`);
+  }
+
+  getSectorByNameAndCompany(sectorName: string,companyId: number): Observable<any> {
 
     if (!sectorName || !companyId) {
       return throwError(() => new Error('Sector name ou companyId inválido'));
     }
 
     const encName = encodeURIComponent(sectorName.trim());
-    const url = `${this.apiUrlSectors}/name/${encName}/company/${companyId}`;
-
+    const url = `${this.apiUrlSectors}/name/${encName}/companyId/${companyId}`;
     return this.http.get<any>(url).pipe(
       map(res => {
         if (!res) {
           throw new Error('Setor não encontrado para esta empresa');
         }
 
-        // caso backend retorne array
         return Array.isArray(res) ? res[0] : res;
       }),
       catchError(err => {
-        // 👇 traduz erro HTTP para erro de negócio
         if (err.status === 404) {
           return throwError(() => new Error('Setor não encontrado para esta empresa'));
         }
 
         return throwError(() => new Error('Erro ao buscar setor'));
       })
-
     );
   }
 
-
-
-  // convenience wrapper: create role from name + sectorId
-  createRole(data: { name: string; sectorId: number }): Observable<Role> {
-    return this.addRole({ name: data.name, sectorId: data.sectorId });
+  createRole(name:string, sectorId: number): Observable<Role> {
+    return this.addRole({ name, sectorId });
   }
 
   attachRoleToEmployee(data: AttachRoleData) {

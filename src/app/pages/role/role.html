@@ -16,28 +16,8 @@
         class="search-btn"
         (click)="searchRoles()"> Search</button>
     </div>
-    <button 
-        class="add-role-btn"
-        (click)="openModal()">Add</button>
-
-    <button 
-        class="attach-role-employee-btn"
-        (click)="openModal2()" >Attach role to employee</button>
-
-    <app-add-role-modal
-      *ngIf="showModal"
-      (saveItem)="addRole($event)"
-      (closeModal)="showModal = false">
-    </app-add-role-modal>
-
-
-
-    <app-attach-role-to-employee
-        *ngIf="showModalAttachRole"
-        title="Attach role to employee"
-        (closeModal)="showModalAttachRole = false">
-    </app-attach-role-to-employee>
-
+    <button class="add-role-btn" (click)="openAddRoleModal()">Add </button>
+    <button class="attach-role-employee-btn" (click)="openAttachRoleToEmployeeModal()" >Attach role to employee </button>
 </section>
 
 <section class="roles-section">
@@ -47,17 +27,38 @@
     </label>
 
     <div class="company-item" *ngFor="let group of groupedRoles">
-        <div class="company-header" (click)="group.expanded = !group.expanded"> {{ group.companyName }}
-            <span class="toggle-icon" [class.open]="group.expanded">▶</span>
+
+        <div class="company-header" (click)="group.expanded = !group.expanded"> 
+          <span class="company-name">
+            {{ group.companyName }}
+          </span>
+
+          <span class="toggle-icon" [class.open]="group.expanded">▶</span>
         </div>
 
         <div class="role-sublist" [class.expanded]="group.expanded">
             <div class="role-item" *ngFor="let role of group.roles"> 
-              <div><strong>Sector: </strong> {{role.sectors.name}} </div>
-              <div><strong>Role: </strong>{{ role.name }} </div>
+
+              <div class= "role-info">
+                <div><strong>Sector: </strong> {{role.sectors.name}} | <strong>Role: </strong>{{ role.name }}</div>
+              </div>
+              
+              <button
+                type="button"
+                class="update-role-btn"
+                (click)="openUpdateRoleModal(role); $event.stopPropagation()">
+                <img src="assets/update-btn.svg" class="btn-icon">
+              </button>
+              <button
+                type="button"
+                class="delete-role-btn"
+                (click)="openDeleteRoleModal(role); $event.stopPropagation()">
+                <img src="assets/delete-btn.svg" class="btn-icon">
+              </button>
+
             </div>
         </div>
-  </div>
+    </div>
   </div>
 </section>
 
@@ -90,3 +91,28 @@
     Next &raquo;
   </button>
 </div>
+
+<app-add-role-modal
+  *ngIf="showAddRoleModal"
+  (saveItem)="handleAddRole($event)"
+  (closeModal)="showAddRoleModal = false">
+</app-add-role-modal>
+
+<app-update-role-modal
+    *ngIf="showUpdateRoleModal"
+    (closeModal)="showUpdateRoleModal = false"
+    (updateItem)="handleUpdateRole($event)">
+</app-update-role-modal>
+
+<app-delete-role-modal
+    *ngIf="showDeleteRoleModal"
+    [role]="selectedRole"
+    (closeModal)="showDeleteRoleModal = false"
+    (deleteItem)="handleDeleteRole($event)">
+</app-delete-role-modal>
+
+<app-attach-role-to-employee
+  *ngIf="showAttachRoleToEmployeeModal"
+  title="Attach role to employee"
+  (closeModal)="showAttachRoleToEmployeeModal = false">
+</app-attach-role-to-employee>

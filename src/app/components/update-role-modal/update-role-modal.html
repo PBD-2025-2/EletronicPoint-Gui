@@ -1,0 +1,33 @@
+<div class="modal-overlay" (click)="close()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>{{ modalTitle }}</h2>
+    <form class="form-section">
+      <label>
+        Role Name:
+        <input
+          placeholder="Role Name"
+          type="text"
+          [(ngModel)]="name"
+          name="name"
+          required
+        />
+      </label>
+      
+      <label>
+        Sector Name:
+        <input
+          placeholder="Sector Name"
+          type="text"
+          [(ngModel)]="sectorName"
+          name="sectorName"
+          required
+        />
+      </label>
+
+      <div class="actions">
+        <button type="button" class="btn-cancel" (click)="close()">CANCEL</button>
+        <button type="button" class="btn-update" (click)="update()">UPDATE</button>
+      </div>
+    </form>
+  </div>
+</div>

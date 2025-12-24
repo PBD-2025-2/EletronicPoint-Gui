@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { AddCompanyModalComponent } from '../../components/add-company-modal/add-company-modal';
 import { Role, RoleService } from '../../services/role.service';
-import { Company, CompanyService } from '../../services/company.service';
+import { CompanyService } from '../../services/company.service';
 import { NotificationService } from '../../services/notification.service';
-import { RosterService } from '../../services/register-roster-service';
 import { AttachRoleToEmployee } from '../../components/attach-role-to-employee/attach-role-to-employee';
-import { AddRoleModal, AddRoleEvent } from '../../components/add-role-modal/add-role-modal';
-import { switchMap, throwError } from 'rxjs';
+import { AddRoleModalComponent } from '../../components/add-role-modal/add-role-modal';
+import { of, switchMap, tap, throwError } from 'rxjs';
+import { UpdateRoleModalComponent } from '../../components/update-role-modal/update-role-modal';
+import { DeleteRoleModalComponent } from '../../components/delete-role-modal/delete-role-modal';
 
 interface GroupedRoles {
   companyName: string;
@@ -17,10 +17,11 @@ interface GroupedRoles {
 
 @Component({
   selector: 'app-role',
-  imports: [CommonModule, AddRoleModal, AttachRoleToEmployee],
+  imports: [CommonModule, AddRoleModalComponent, AttachRoleToEmployee, UpdateRoleModalComponent, DeleteRoleModalComponent],
   templateUrl: './role.html',
   styleUrl: './role.scss'
 })
+
 export class RoleComponent implements OnInit {
   searchTerm1 = '';
   searchTerm2 = '';
@@ -28,26 +29,29 @@ export class RoleComponent implements OnInit {
   roles: Role[] = [];
   groupedRoles: GroupedRoles[] = [];
 
-  showModal = false;
-  showModalAttachRole = false;
+  showAddRoleModal = false;
+  showUpdateRoleModal = false;
+  showDeleteRoleModal = false;
+  showAttachRoleToEmployeeModal = false;
 
   errorMessage: string | null = null;
   successMessage: string | null = null;
 
   saving = false;
 
-  // Pagination variables
+  selectedRole!: Role;
+
   currentPage = 1;
   pageSize = 9;
   totalItems = 0;
   totalPages = 0;
+console: any;
 
   constructor(
     private roleService: RoleService,
-    private rosterService: RosterService,
     private companyService: CompanyService,
     private notificationService: NotificationService,
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loadRoles();
@@ -66,6 +70,50 @@ export class RoleComponent implements OnInit {
         this.notificationService.showError("Erro ao carregar roles");
       }
     });
+  }
+
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.paginateAndGroupRoles();
+    }
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.goToPage(this.currentPage + 1);
+    }
+  }
+
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.goToPage(this.currentPage - 1);
+    }
+  }
+
+  private paginateAndGroupRoles() {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+
+    const rolesForCurrentPage = this.roles.slice(startIndex, endIndex);
+
+    const map = new Map<string, Role[]>();
+
+    rolesForCurrentPage.forEach(r => {
+      const companyName = r.sectors?.company?.name || 'N/A';
+
+      if (!map.has(companyName)) {
+        map.set(companyName, []);
+      }
+
+      map.get(companyName)!.push(r);
+    });
+
+    this.groupedRoles = Array.from(map.entries()).map(([companyName, roles]) => ({
+      companyName,
+      roles,
+      expanded: false
+    }));
   }
 
   searchRoles() {
@@ -94,7 +142,7 @@ export class RoleComponent implements OnInit {
     } else if (cnpjTerm) {
       console.log("SEARCHING BY CNPJ ONLY: ", cnpjTerm);
 
-      
+
       this.roleService.searchRolesByCnpj(cnpjTerm).subscribe({
         next: handleSearchResponse,
         error: (err) => this.notificationService.showError("CNPJ not found ")
@@ -108,119 +156,154 @@ export class RoleComponent implements OnInit {
     }
   }
 
-  addRole(event: AddRoleEvent) {
-    if (!event) return;
+  openAddRoleModal() {
+    this.showAddRoleModal = true;
+  }
 
-    const roleName = event.name.trim();
-    const companyName = event.companyName.trim();
-    const sectorName = event.sectorName.trim();
+  openUpdateRoleModal(role: Role) {
+    this.showUpdateRoleModal = true;
+    this.selectedRole = role;
+  }
+  
+  openDeleteRoleModal(role: Role) {
+    console.log(role)
+    this.showDeleteRoleModal = true;
+    this.selectedRole = role;
+  }
+
+  openAttachRoleToEmployeeModal() {
+    this.showAttachRoleToEmployeeModal = true;
+  }
+
+  handleAddRole(event: any) {
+    if (!event) {
+      return this.notificationService.showError('Evento vazio');
+    };
+
+    const roleName = event.name?.trim();
+    const companyName = event.companyName?.trim();
+    const sectorName = event.sectorName?.trim();
 
     if (!roleName || !companyName || !sectorName) {
-      this.notificationService.showError('Preencha todos os campos');
-      return;
+      return this.notificationService.showError('Preencha todos os campos!');
     }
+
+    return this.addRole(roleName, companyName, sectorName);
+  }
+
+  handleUpdateRole(event: any) {
+    console.log("EVENT: ", event)
+    console.log("Selected Role: ", this.selectedRole)
+    if (!event) {
+      return this.notificationService.showError('Evento vazio');
+    };
+
+    const roleName = event.name?.trim();
+    const sectorName = event.sectorName?.trim();
+
+    if (!roleName || !sectorName) {
+      return this.notificationService.showError('Preencha todos os campos!');
+    }
+
+    return this.updateRole(this.selectedRole, roleName, sectorName)
+  }
+
+  handleDeleteRole(event: any) {
+    console.log("EVENT: ", event)
+    console.log("Selected Role: ", this.selectedRole)
+    return this.deleteRole(this.selectedRole.id);
+  }
+
+  addRole(roleName: string, companyName: string, sectorName: string) {
 
     this.saving = true;
 
-    this.companyService.getCompanyByName(companyName).pipe(
+    this.getCompanyByName(companyName).pipe(
+      switchMap(company =>
+        this.getSectorByNameAndCompany(sectorName, company.id)
+      ),
 
-      // 1️⃣ pega o companyId
-      switchMap(company => {
-        console.log("COMPANY FOUND:", company);
-        if (!company.id) {
-          return throwError(() => new Error('Empresa encontrada, mas sem ID'));
-        }
-
-        // 2️⃣ usa o endpoint NOVO (SEM FILTRO)
-        return this.roleService.getSectorByNameAndCompany(
-          sectorName,
-          company.id
-        );
-      }),
-
-      // 3️⃣ cria o cargo
-      switchMap(sector => {
-        
-        console.log("SECTOR FOUND:", sector);
-        if (!sector || !sector.id) {
-          return throwError(() => new Error('Sector not found for this company'));
-        }
-
-        return this.roleService.createRole({
-          name: roleName,
-          sectorId: sector.id
-        });
-      })
+      switchMap(sector =>
+        this.createRole(roleName, sector.id)
+      )
 
     ).subscribe({
       next: () => {
         this.notificationService.showSuccess('Sector created sucessfully!');
-        this.showModal = false;
+        this.showAddRoleModal = false;
         this.saving = false;
         this.loadRoles();
       },
       error: err => {
         console.error('ERROR ADD ROLE:', err);
         this.saving = false;
-        this.notificationService.showError(
-          err.message || 'Error while creating Sector'
-        );
+        this.notificationService.showError(err.message || 'Error while creating Sector');
       }
     });
   }
 
 
+  updateRole(role: Role, name: string, sectorName: string) {
+    this.getSectorByNameAndCompany(sectorName, role.sectors.company.id).pipe(
+      switchMap(sector => {
+        const rolePutRequest = { id: role.id, name: name, sectorId: sector.id };
+        return this.roleService.updateRole(rolePutRequest);
+      })
+    )
+      .subscribe({
+        next: () => {
+          this.loadRoles()
+          this.showUpdateRoleModal = false;
+          this.notificationService.showSuccess("Role updated successfully");
+        },
+        error: () => {
+          this.notificationService.showError("Error while updating Role");
+          this.showAddRoleModal = false;
+        }
+      });
+  }
 
-  
-  private paginateAndGroupRoles() {
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-
-    const rolesForCurrentPage = this.roles.slice(startIndex, endIndex);
-
-    const map = new Map<string, Role[]>();
-
-    rolesForCurrentPage.forEach(r => {
-      const companyName = r.sectors?.company?.name || 'N/A';
-
-      if (!map.has(companyName)) {
-        map.set(companyName, []);
+  deleteRole(id: number) {
+    this.roleService.deleteRole(id).subscribe({
+      next: () => {
+        this.loadRoles()
+        this.showDeleteRoleModal = false;
+        this.notificationService.showSuccess("Role deleted successfully");
+      },
+      error: () => {
+        this.notificationService.showError("Error while deleting Role");
+        this.showDeleteRoleModal = false;
       }
-
-      map.get(companyName)!.push(r);
     });
-
-    this.groupedRoles = Array.from(map.entries()).map(([companyName, roles]) => ({
-      companyName,
-      roles,
-      expanded: false
-    }));
   }
 
-  goToPage(page: number) {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-      this.paginateAndGroupRoles();
-    }
+  private getCompanyByName(companyName: string) {
+    return this.companyService.getCompanyByName(companyName).pipe(
+      tap(company => console.log('COMPANY FOUND:', company)),
+      switchMap(company => {
+        if (!company?.id) {
+          return throwError(() => new Error('Empresa encontrada, mas sem ID'));
+        }
+        return of(company);
+      })
+    );
   }
 
-  nextPage() {
-    if (this.currentPage < this.totalPages) {
-      this.goToPage(this.currentPage + 1);
-    }
+  private getSectorByNameAndCompany(sectorName: string, companyId: number) {
+    console.log("sectorName:", sectorName)
+    console.log("companyId:", companyId)
+    return this.roleService.getSectorByNameAndCompany(sectorName, companyId).pipe(
+      tap(sector => console.log('SECTOR FOUND:', sector)),
+      switchMap(sector => {
+        if (!sector?.id) {
+          return throwError(() => new Error('Setor não encontrado para esta empresa'));
+        }
+        return of(sector);
+      })
+    );
   }
 
-  previousPage() {
-    if (this.currentPage > 1) {
-      this.goToPage(this.currentPage - 1);
-    }
-  }
-
-  openModal() {
-    this.showModal = true;
-  }
-
-  openModal2() {
-    this.showModalAttachRole = true;
+  private createRole(roleName: string, sectorId: number) {
+    return this.roleService.createRole(roleName, sectorId);
   }
 }

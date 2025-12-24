@@ -1,0 +1,18 @@
+<div class="modal-overlay" (click)="close()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>{{ modalTitle }}</h2>
+    <form class="form-section">
+      <label>
+        Are you sure you want to delete this role? 
+        <br><br>COMPANY: <strong>{{role.sectors.company.name}}</strong>
+        <br>SECTOR: <strong>{{role.sectors.name}}</strong>
+        <br>ROLE: <strong>{{role.name}}</strong>
+      </label>
+
+      <div class="actions">
+        <button type="button" class="btn-cancel" (click)="close()">CANCEL</button>
+        <button type="button" class="btn-delte" (click)="delete()">DELETE</button>
+      </div>
+    </form>
+  </div>
+</div>

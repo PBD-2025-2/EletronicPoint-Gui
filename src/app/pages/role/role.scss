@@ -67,7 +67,8 @@
 
 .roles-section {
   margin-top: 24px;
-
+  padding: 8px;
+  
   .role-list {
     max-height: 500px;
     overflow-y: auto;
@@ -79,33 +80,38 @@
     padding: 4px;
   }
   .company-item {
-    outline: 1px solid $secondary-color;
-    border: none;
+    border: 1px solid $secondary-color;
     border-radius: 8px;
     margin-bottom: 8px;
+    max-height: 450px;
 
     .company-header {
+      border-radius: 8px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
+      
       padding: 12px;
       font-size: 18px;
-      cursor: pointer;
       background-color: white;
       border: 1px solid $primary-color;
-      border-radius: 8px;
-      background-color: #fff;
+
+      &:last-child {
+        border-bottom: none;
+      }
 
       &:hover {
-        background-color: color.adjust($primary-color, $lightness: 8%);
+        cursor: pointer;
+        background-color: color.adjust($primary-color, $lightness: 30%);
       }
+    }
 
-      .toggle-icon { 
-        transition: transform 0.1s ease-in-out; 
-        &.open { 
-          transform: rotate(90deg); 
-        } 
-      }
+    .toggle-icon {
+      margin-left: 4px;
+      transition: transform 0.1s ease-in-out; 
+
+      &.open {
+        transform: rotate(90deg);} 
     }
 
     .role-sublist {
@@ -120,6 +126,11 @@
       }
 
       .role-item {
+        
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
         padding: 8px 0;
         font-size: 16px;
         border-bottom: 1px solid $gray-background;
@@ -128,8 +139,45 @@
           border-bottom: none;
         }
       }
+
+      .role-info {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+      }
     }
   }
+
+  button {
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+
+        padding: 0;
+        width: 36px;
+        height: 36px;
+
+        display: flex;
+        align-items: center;
+        margin-left: 5px;
+        justify-content: center;
+
+        box-sizing: border-box;
+        transition: opacity 0.15s ease;
+        outline: none;
+
+        &:hover {
+            opacity: 0.5;
+        }
+        
+        &.update-role-btn {
+            background-color: $update-btn-color;
+        }
+
+        &.delete-role-btn {
+            background-color: $delete-btn-color;
+        }    
+    }
 }
 
 .pagination-controls {
