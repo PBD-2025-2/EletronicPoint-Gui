@@ -7,37 +7,42 @@
             placeholder="Enter an ID, a name or a CNPJ" 
         />
         <button 
-        class="search-btn" 
-        (click)="searchCompanies()">Search</button>
+            class="search-btn" 
+            (click)="searchCompanies()">Search
+        </button>
     </div>
     <button 
         class="add-company-btn"
-        (click)="openModal('company')">Add Company</button>
-     <button 
+        (click)="openAddCompanyModal('company')">Add Company
+    </button>
+    <button 
         class="add-sector-btn"
-        (click)="openModal('sector')">Add Company Sector</button>
-
+        (click)="openAddSectorModal('sector')">Add sector
+    </button>
 </section>
 
 <section class="companies-section">
     <div class="company-list">
         <div class="company-item" *ngFor="let company of paginatedCompanies">
             <div class="company-info">
-            {{ company.name }}
+                {{ company.name }}
+            </div>
+            <div class="company-actions">
+                <button 
+                    class="update-company-btn"
+                    (click)="openUpdateCompanyModal('company', company)">
+                    <img src="assets/update-btn.svg" class="btn-icon">
+                </button>
+
+                <button 
+                    class="delete-company-btn"
+                    (click)="openDeleteCompanyModal('company', company)">
+                    <img src="assets/delete-btn.svg" class="btn-icon">
+                </button>
             </div>
         </div>
     </div>
 </section>
-
-<app-add-company-modal
-    *ngIf="showModal"
-    [title]="modalTitle"
-    [secondLabel]="secondLabel"
-    [secondPlaceholder]="secondPlaceholder"
-    [secondKey]="secondKey"
-    (closeModal)="showModal = false"
-    (saveItem)="handleSave($event)">
-</app-add-company-modal>
 
 <div class="pagination-controls" *ngIf="totalPages > 1">
     <button 
@@ -63,5 +68,40 @@
         class="pagination-btn">
         Next &raquo;
     </button>
-
 </div>
+
+<app-add-company-modal
+    *ngIf="showAddCompanyModal"
+    [title]="modalTitle"
+    [secondLabel]="secondLabel"
+    [secondPlaceholder]="secondPlaceholder"
+    [secondKey]="secondKey"
+    (closeModal)="showAddCompanyModal = false"
+    (saveItem)="handleSaveCompany($event)">
+</app-add-company-modal>
+    
+<app-add-sector-modal
+    *ngIf="showAddSectorModal"
+    [title]="modalTitle"
+    [secondLabel]="secondLabel"
+    [secondPlaceholder]="secondPlaceholder"
+    [secondKey]="secondKey"
+    (closeModal)="showAddSectorModal = false"
+    (saveItem)="handleSaveCompany($event)">
+</app-add-sector-modal>
+
+<app-update-company-modal
+    *ngIf="showUpdateCompanyModal"
+    [title]="modalTitle"
+    [company]="selectedCompany"
+    (closeModal)="showUpdateCompanyModal = false"
+    (updateItem)="handleUpdateCompany($event)">
+</app-update-company-modal>
+
+<app-delete-company-modal
+    *ngIf="showDeleteCompanyModal"
+    [title]="modalTitle"
+    [company]="selectedCompany"
+    (closeModal)="showDeleteCompanyModal = false"
+    (deleteItem)="handleDeleteCompany($event)">
+</app-delete-company-modal>

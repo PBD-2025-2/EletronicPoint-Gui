@@ -30,12 +30,14 @@
 
         &.search-btn {
             color: white;
+            border-color: $primary-color;
             font-size: 16px;
         }
 
         &.add-company-btn {
             background-color: $primary-color;
-            width: 200px;
+            border-color: $primary-color;
+            width: 150;
             margin-left: auto; 
             color: white;
             font-size: 16px;
@@ -50,7 +52,8 @@
 
         &.add-sector-btn {
             background-color: $primary-color;
-            width: 200px;
+            border-color: $primary-color;
+            width: 150;
             color: white;
             font-size: 16px;
         }
@@ -58,6 +61,7 @@
 }
 
 .companies-section {
+    
     margin-top: 24px;
     padding: 8px;
     
@@ -65,16 +69,16 @@
         border: 1px solid $secondary-color;
         border-radius: 8px;
         max-height: 450px;
-        overflow-y: auto;
     }
 
     .company-item {
-        border: 1px solid $gray-background;
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        justify-content: space-between;
+
         padding: 12px;
         font-size: 16px;
+        border: 1px solid $gray-background;
 
         &:last-child {
             border-bottom: none;
@@ -82,16 +86,51 @@
 
         &:hover {
             cursor: pointer;
+            background-color: rgba(0, 0, 0, 0.02);
         }
 
         .company-info {
             display: flex;
             flex-direction: column;
-            
+        }
+
+        .company-actions {
+            display: flex;
+            gap: 5px;
+            flex-shrink: 0;
         }
     }
-}
 
+    button {
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+
+        padding: 0;
+        width: 36px;
+        height: 36px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        box-sizing: border-box;
+        transition: opacity 0.15s ease;
+        outline: none;
+
+        &:hover {
+            opacity: 0.5;
+        }
+        
+        &.update-company-btn {
+            background-color: $update-btn-color;
+        }
+
+        &.delete-company-btn {
+            background-color: $delete-btn-color;
+        }    
+    }
+}
 
 .pagination-controls {
     display: flex;
