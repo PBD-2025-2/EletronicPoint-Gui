@@ -11,7 +11,7 @@ import { FormsModule } from '@angular/forms';
 })
 
 export class AddCompanyModalComponent {
-  @Input() modalTitle = 'Add Item';
+  @Input() modalTitle = 'Add Company';
 
   @Input() secondLabel = 'Document';
   @Input() secondPlaceholder = '';
@@ -31,7 +31,7 @@ export class AddCompanyModalComponent {
   save() {
     this.saveItem.emit({
       name: this.name,
-      [this.secondKey]: this.secondValue   //dynamic key
+      [this.secondKey]: this.secondValue
     });
   }
 }
