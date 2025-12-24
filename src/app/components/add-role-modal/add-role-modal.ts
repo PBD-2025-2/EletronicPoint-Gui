@@ -15,11 +15,11 @@ export interface AddRoleEvent {
   templateUrl: './add-role-modal.html',
   styleUrl: './add-role-modal.scss'
 })
-export class AddRoleModal {
+export class AddRoleModalComponent {
 
   @Input() title = 'Add Role';
   @Output() closeModal = new EventEmitter<void>();
-  @Output() saveItem = new EventEmitter<AddRoleEvent>();
+  @Output() saveItem = new EventEmitter<any>();
 
   name = '';
   companyName = '';
@@ -32,11 +32,6 @@ export class AddRoleModal {
   }
 
   saveAddRole() {
-    console.log("CALLING SAVE ADD ROLE");
-    if (!this.name.trim() || !this.companyName.trim() || !this.sectorName.trim()) {
-      return;
-    }
-
     this.saveItem.emit({
       name: this.name.trim(),
       companyName: this.companyName.trim(),
