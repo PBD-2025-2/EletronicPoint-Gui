@@ -20,11 +20,11 @@ export interface RosterApi {
 }
 
 
-@Component({
+({
   selector: 'app-roster-api.model.ts',
   imports: [],
-  templateUrl: './roster-api.model.ts.html',
-  styleUrl: './roster-api.model.ts.scss'
+  templateUrl: './roster-api.model.html',
+  styleUrl: './roster-api.model.scss'
 })
 export class RosterApiModelTs {
 
