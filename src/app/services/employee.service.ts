@@ -60,7 +60,6 @@ export class EmployeeService {
 
       return this.getEmployeeById(trimmed);
     }
-    
 
     return this.getEmployeeByName(trimmed)
   }
@@ -95,5 +94,4 @@ export class EmployeeService {
       catchError(err => throwError(() => err))
     );
   }
-
 }
