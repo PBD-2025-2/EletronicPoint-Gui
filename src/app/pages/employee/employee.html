@@ -9,17 +9,18 @@
         <button class="search-btn" (click)="searchEmployees()">Search</button>
     </div>
 
-    <button class="add-employee-btn" (click)="openModal()">Add</button>
-
-    <app-add-company-modal
-        *ngIf="showModal"
-        title="Add Employee"
-        secondLabel="CPF"
-        secondPlaceholder="12345678900"
-        secondKey="cpf"
-        (closeModal)="showModal = false">
-    </app-add-company-modal>
+    <button class="add-employee-btn" (click)="openAddEmployeeModal()">Add</button>
 </section>
+
+<app-add-employee-modal
+    *ngIf="showAddEmployeeModal"
+    [title]="modalTitle"
+    [secondLabel]="secondLabel"
+    [secondPlaceholder]="secondPlaceholder"
+    [secondKey]="secondKey"
+    (closeModal)="showAddEmployeeModal = false"
+    (saveItem)="handleSaveEmployee($event)">
+</app-add-employee-modal>
 
 <section class="employee-section">
   <div class="employee-list">

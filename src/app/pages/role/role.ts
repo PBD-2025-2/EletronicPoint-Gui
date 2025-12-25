@@ -66,54 +66,9 @@ console: any;
         this.paginateAndGroupRoles();
       },
       error: err => {
-        console.error("Erro ao carregar roles:", err);
-        this.notificationService.showError("Erro ao carregar roles");
+        this.notificationService.showError("Error while loading roles");
       }
     });
-  }
-
-  goToPage(page: number) {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-      this.paginateAndGroupRoles();
-    }
-  }
-
-  nextPage() {
-    if (this.currentPage < this.totalPages) {
-      this.goToPage(this.currentPage + 1);
-    }
-  }
-
-  previousPage() {
-    if (this.currentPage > 1) {
-      this.goToPage(this.currentPage - 1);
-    }
-  }
-
-  private paginateAndGroupRoles() {
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-
-    const rolesForCurrentPage = this.roles.slice(startIndex, endIndex);
-
-    const map = new Map<string, Role[]>();
-
-    rolesForCurrentPage.forEach(r => {
-      const companyName = r.sectors?.company?.name || 'N/A';
-
-      if (!map.has(companyName)) {
-        map.set(companyName, []);
-      }
-
-      map.get(companyName)!.push(r);
-    });
-
-    this.groupedRoles = Array.from(map.entries()).map(([companyName, roles]) => ({
-      companyName,
-      roles,
-      expanded: false
-    }));
   }
 
   searchRoles() {
@@ -215,7 +170,7 @@ console: any;
   }
 
   addRole(roleName: string, companyName: string, sectorName: string) {
-
+    console.log("Adding Role:", roleName, "Company:", companyName, "Sector:", sectorName)
     this.saving = true;
 
     this.getCompanyByName(companyName).pipe(
@@ -235,13 +190,15 @@ console: any;
         this.loadRoles();
       },
       error: err => {
-        console.error('ERROR ADD ROLE:', err);
         this.saving = false;
         this.notificationService.showError(err.message || 'Error while creating Sector');
       }
     });
   }
 
+  private createRole(roleName: string, sectorId: number) {
+    return this.roleService.createRole(roleName, sectorId);
+  }
 
   updateRole(role: Role, name: string, sectorName: string) {
     this.getSectorByNameAndCompany(sectorName, role.sectors.company.id).pipe(
@@ -303,7 +260,49 @@ console: any;
     );
   }
 
-  private createRole(roleName: string, sectorId: number) {
-    return this.roleService.createRole(roleName, sectorId);
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.paginateAndGroupRoles();
+    }
   }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.goToPage(this.currentPage + 1);
+    }
+  }
+
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.goToPage(this.currentPage - 1);
+    }
+  }
+
+  private paginateAndGroupRoles() {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+
+    const rolesForCurrentPage = this.roles.slice(startIndex, endIndex);
+
+    const map = new Map<string, Role[]>();
+
+    rolesForCurrentPage.forEach(r => {
+      const companyName = r.sectors?.company?.name || 'N/A';
+
+      if (!map.has(companyName)) {
+        map.set(companyName, []);
+      }
+
+      map.get(companyName)!.push(r);
+    });
+
+    this.groupedRoles = Array.from(map.entries()).map(([companyName, roles]) => ({
+      companyName,
+      roles,
+      expanded: false
+    }));
+  }
+
+
 }

@@ -25,7 +25,8 @@ export interface EmployeeRoles {
 
 export interface Employee {
   id: number,
-  name: string
+  name: string,
+  cpf?: string;
 }
 
 @Injectable({
@@ -54,16 +55,18 @@ export class EmployeeService {
     if (/^\d+$/.test(trimmed)) {
 
       if (trimmed.length === 11) {
-       this.getEmployeeByCpf(trimmed);
+       return this.getEmployeeByCpf(trimmed);
       }
 
-      this.getEmployeeById(trimmed);
+      return this.getEmployeeById(trimmed);
     }
+    
 
     return this.getEmployeeByName(trimmed)
   }
 
   getEmployeeByName(name: string): Observable<Employee[]> {
+    console.log("Searching employee by name:", name);
     return this.http.get<Employee[]>(`${this.apiUrlEmployee}/name/${name}`).pipe(
           catchError(err => throwError(() => err)));
   }
@@ -74,6 +77,7 @@ export class EmployeeService {
   }
 
   getEmployeeById(employeeId: string): Observable<Employee> {
+    console.log("Searching employee by ID:", employeeId);
     return this.http.get<Employee>(`${this.apiUrlEmployee}/id/${employeeId}`);
   }
 
@@ -83,4 +87,13 @@ export class EmployeeService {
       `${this.apiUrlEmployeeRoles}/name/${encoded}`).pipe(
           catchError(err => throwError(() => err)));
   }
+  
+  addEmployee(employee: Omit<Employee, 'id'>): Observable<Employee> {
+    console.log("Adding employee:", employee);
+
+    return this.http.post<Employee>(this.apiUrlEmployee, employee).pipe(
+      catchError(err => throwError(() => err))
+    );
+  }
+
 }

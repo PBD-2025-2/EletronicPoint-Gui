@@ -94,4 +94,6 @@ export class CompanyService {
   addCompanySector(sector: Sector): Observable<Sector> {
     return this.http.post<Sector>(this.apirUrlSectors, sector);
   }
+
+  
 }

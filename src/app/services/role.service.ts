@@ -42,12 +42,11 @@ export class RoleService {
   constructor(private http: HttpClient) {}
 
   getRoles(): Observable<Role[]> {
-    console.log("CALLING GET ROLES");
     return this.http.get<Role[]>(this.apiRolesUrl);
   }
 
   searchRoles(term: string): Observable<Role[]> {
-    console.log("SEARCH ROLES FOR TERM: ", term);
+
     const encodedTerm = encodeURIComponent(term.trim());
     const urlByName = `${this.apiRolesUrl}/name/${encodedTerm}`;
     const urlByCnpj = `${this.apiRolesUrl}/cnpj/${encodedTerm}`;
@@ -93,8 +92,6 @@ export class RoleService {
   }
 
   searchRolesByCnpj(cnpj: string): Observable<Role[]> {
-    console.log("CALLING SEARCH ROLES FOR CNPJ: ", cnpj);
-
     const encoded = encodeURIComponent(cnpj);
     return this.http.get<Role[]>(`${this.apiRolesUrl}/cnpj/${encoded}`)
       .pipe( catchError(err => throwError(() => err)));

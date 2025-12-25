@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Employee, EmployeeService } from '../../services/employee.service';
-import { AddCompanyModalComponent } from '../../components/add-company-modal/add-company-modal';
 import { CommonModule } from '@angular/common';
 import { NotificationService } from '../../services/notification.service';
 import { Roster } from '../../services/register-roster-service';
+import { AddEmployeeModal } from '../../components/add-employee-modal/add-employee-modal';
 
 @Component({
   selector: 'app-employee',
-  imports: [CommonModule, AddCompanyModalComponent],
+  imports: [CommonModule, AddEmployeeModal],
   templateUrl: './employee.html',
   styleUrl: './employee.scss'
 })
@@ -15,9 +15,15 @@ export class EmployeeComponent implements OnInit {
 
   employees: Employee[] = [];
   searchTerm: string = '';
-  showModal = false;
+  showAddEmployeeModal = false;
   errorMessage: string | null = null;
   successMessage: string | null = null;
+  saving = false;
+
+  modalTitle = '';
+  secondLabel = '';
+  secondPlaceholder = '';
+  secondKey = '';
 
   rosters: Roster[] = [];
 
@@ -87,6 +93,44 @@ export class EmployeeComponent implements OnInit {
     );
   }
 
+  openAddEmployeeModal() {
+    this.showAddEmployeeModal = true;
+    this.modalTitle = 'Add Employee';
+    this.secondLabel = 'CPF';
+    this.secondPlaceholder = '12345678901';
+    this.secondKey = 'cpf';
+  }
+
+  handleSaveEmployee(event: any) {
+    console.log("handleSaveEmployee called with:", event);
+    this.saving = true;
+
+    this.addEmployee(event.name, event.cpf);
+    return;
+  }
+
+  addEmployee(name: string, cpf: string) {
+    const newEmployee = {name: name, cpf: cpf};
+    this.saving = true;
+
+    this.employeeService.addEmployee(newEmployee).subscribe({
+      next: (created) => {
+        this.employees = [...this.employees, created];
+        this.currentPage = this.totalPages;
+        this.saving = false;
+        this.showAddEmployeeModal = false;
+        this.notificationService.showSuccess("Employee created successfully");
+        this.loadEmployees();
+      },
+
+      error: (err) => {
+        this.notificationService.showError("Error while creating Employee");
+        this.saving = false;
+        this.showAddEmployeeModal = false;
+      }
+    });
+  }
+
   searchEmployees() {
     const term = this.searchTerm?.trim();
     if (!term) {
@@ -134,21 +178,11 @@ export class EmployeeComponent implements OnInit {
         this.currentPage = 1;
       },
       error: (err) => {
-        this.notificationService.showError("Employee not found!");
+        this.notificationService.showError(err.message || "Employee not found!");
       }
     })
   }
 
-  
-  private showNotification(message: string, typeNotification: boolean) {
-    if (typeNotification) {
-      this.successMessage = message;
-      setTimeout(() => this.successMessage = null, 3000);
-    } else {
-      this.errorMessage = message;
-      setTimeout(() => this.errorMessage = null, 3000);
-    }
-  }
 
   get paginatedRoles(): Employee[] {
     const start = (this.currentPage - 1) * this.itemsPerPage;
@@ -167,9 +201,5 @@ export class EmployeeComponent implements OnInit {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
     }
-  }
-
-  openModal() {
-    this.showModal = true;
   }
 }
