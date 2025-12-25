@@ -12,16 +12,6 @@
     <button class="add-employee-btn" (click)="openAddEmployeeModal()">Add</button>
 </section>
 
-<app-add-employee-modal
-    *ngIf="showAddEmployeeModal"
-    [title]="modalTitle"
-    [secondLabel]="secondLabel"
-    [secondPlaceholder]="secondPlaceholder"
-    [secondKey]="secondKey"
-    (closeModal)="showAddEmployeeModal = false"
-    (saveItem)="handleSaveEmployee($event)">
-</app-add-employee-modal>
-
 <section class="employee-section">
   <div class="employee-list">
     <label>Employees</label>
@@ -79,3 +69,13 @@
         Next &raquo;
     </button>
 </div>
+
+<app-add-employee-modal
+    *ngIf="showAddEmployeeModal"
+    [title]="modalTitle"
+    [secondLabel]="secondLabel"
+    [secondPlaceholder]="secondPlaceholder"
+    [secondKey]="secondKey"
+    (closeModal)="showAddEmployeeModal = false"
+    (saveItem)="handleSaveEmployee($event)">
+</app-add-employee-modal>
