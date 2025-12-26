@@ -27,6 +27,7 @@ export class EmployeeComponent implements OnInit {
 
   rosters: Roster[] = [];
 
+
   groups: {
     expanded: boolean;
     employee: {
@@ -42,8 +43,6 @@ export class EmployeeComponent implements OnInit {
     }[];
   }[] = [];
 
-
-
   constructor(
     private employeeService: EmployeeService,
     private notificationService: NotificationService
@@ -51,7 +50,6 @@ export class EmployeeComponent implements OnInit {
 
   currentPage: number = 1;
   itemsPerPage: number = 10;
-
 
   ngOnInit() {
     this.loadEmployees();
