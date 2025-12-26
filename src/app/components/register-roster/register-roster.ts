@@ -116,7 +116,7 @@ export class RegisterRoster {
       this.createDailyRoster(rosterName, weeklyWorkload, dailySchedules);
       
     } else if (dutySchedules) {
-      // Chamada para duty
+      
       this.createRosterDuty(rosterName, weeklyWorkload, dutySchedules);
     }
   }

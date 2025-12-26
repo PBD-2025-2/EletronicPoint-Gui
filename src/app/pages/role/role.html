@@ -4,17 +4,17 @@
             type="text" 
             (input)="searchTerm1 = $event.target.value"
             class="input-search-role1" 
-            placeholder="Enter an ID or a role name"
+            placeholder="Enter an ID, a role name or a CNPJ"
         />
         <input
             type="text" 
             (input)="searchTerm2 = $event.target.value"
             class="input-search-role2" 
-            placeholder="Or the company's CNPJ" 
+            placeholder="Enter the company sector" 
         />
         <button 
         class="search-btn"
-        (click)="searchRoles()"> Search</button>
+        (click)="searchRoles()">Search</button>
     </div>
     <button class="add-role-btn" (click)="openAddRoleModal()">Add </button>
     <button class="attach-role-employee-btn" (click)="openAttachRoleToEmployeeModal()" >Attach role to employee </button>
@@ -22,9 +22,7 @@
 
 <section class="roles-section">
   <div class="role-list">
-    <label>
-        Companies
-    </label>
+    <strong>Companies</strong>
 
     <div class="company-item" *ngFor="let group of groupedRoles">
 

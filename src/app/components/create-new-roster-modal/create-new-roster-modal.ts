@@ -16,7 +16,7 @@ export class CreateNewRosterModal {
   rosterName: string = '';
   weeklyWorkload: number | null = null;
 
-  rosterType: 'daily' | 'duty' = 'daily'; // default
+  rosterType: 'daily' | 'duty' = 'daily';
 
   constructor(private notificationService: NotificationService) {}
 
@@ -26,7 +26,6 @@ export class CreateNewRosterModal {
     timeOff: 0
   };
 
-  // Maximum 7 days, each with maximum 2 schedules
   dailySchedules: {
     day: string;
     schedules: { start: string; end: string }[];
@@ -85,22 +84,18 @@ export class CreateNewRosterModal {
   
   if (this.rosterType === 'daily') {
 
-    // days and intervals validation
     const validDays = this.dailySchedules
-      .filter(d => d.day.trim()) // day name is necessary
+      .filter(d => d.day.trim())
       .map(d => ({
         day: d.day.trim(),
 
-        // Keep only complete and valid intervals
         schedules: d.schedules
           .filter(s => s.start && s.end)
           .map(s => `${s.start}-${s.end}`)
       }))
 
-      // Only keep days with at least one complete interval
       .filter(d => d.schedules.length > 0);
 
-    // Make sure that creation is not gonna happen if there's any incomplete interval time
     const hasIncomplete = this.dailySchedules.some(d =>
       d.schedules.some(s => (s.start && !s.end) || (!s.start && s.end))
     );

@@ -61,14 +61,13 @@
 }
 
 .companies-section {
-    
     margin-top: 24px;
     padding: 8px;
     
     .company-list {
         border: 1px solid $secondary-color;
         border-radius: 8px;
-        max-height: 450px;
+        max-height: auto;
     }
 
     .company-item {

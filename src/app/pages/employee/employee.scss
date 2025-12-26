@@ -24,6 +24,7 @@
     
   button {
     background-color: $primary-color;
+    border-color: $primary-color;
     padding: 14px;
     border-radius: 8px;
     cursor: pointer;
@@ -52,6 +53,8 @@
 }
 
 .employee-section {
+  margin-top: 18px;
+
   .employee-list {
     max-height: 500px;
     overflow-y: auto;
@@ -91,8 +94,6 @@
         background: $primary-color;
       }
     }
-    
-
   }
   .employee-header.disabled {
     cursor: default;
@@ -103,25 +104,25 @@
   }
 
   .employee-sublist {
-      overflow: hidden;
-      max-height: 0;
-      padding: 0 12px;
-      transition: max-height 0.3s ease, padding 0.3s ease;
+    overflow: hidden;
+    max-height: 0;
+    padding: 0 12px;
+    transition: max-height 0.3s ease, padding 0.3s ease;
 
-      &.expanded {
-        max-height: 1000px; // altura máxima "virtual" suficiente para o conteúdo crescer
-        padding: 12px;
-      }
-
-      .employee-item {
-        padding: 8px 0;
-        font-size: 16px;
-        border-bottom: 1px solid $gray-background;
-
-      &:last-child {
-        border-bottom: none;
-      }
+    &.expanded {
+      max-height: 1000px; // altura máxima "virtual" suficiente para o conteúdo crescer
+      padding: 12px;
     }
+
+    .employee-item {
+      padding: 8px 0;
+      font-size: 16px;
+      border-bottom: 1px solid $gray-background;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
   }
 
   .employee-details {

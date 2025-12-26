@@ -45,66 +45,48 @@ export class RoleService {
     return this.http.get<Role[]>(this.apiRolesUrl);
   }
 
-  searchRoles(term: string): Observable<Role[]> {
+  searchRoles(roleName: string, sectorName?: string): Observable<any> {
+    const trimmed = roleName.trim();
 
-    const encodedTerm = encodeURIComponent(term.trim());
-    const urlByName = `${this.apiRolesUrl}/name/${encodedTerm}`;
-    const urlByCnpj = `${this.apiRolesUrl}/cnpj/${encodedTerm}`;
-    const urlById   = `${this.apiRolesUrl}/id/${encodedTerm}`;
+    // Input with only numbers
+    if (/^\d+$/.test(trimmed)) {
+      
+      if (trimmed.length === 14) {
+        return this.getRoleByCnpj(trimmed)
+      }
+      
+      return this.getRoleById(trimmed);
+    }
 
-    const safeGet = (url: string) =>
-      this.http.get<Role[]>(url).pipe(catchError(err => throwError(() => err)));
+    if (roleName && sectorName) {
+      return this.getRoleByNameAndSector(roleName, sectorName);
+    }
 
-    const safeGetId = (url: string) =>
-      this.http.get<Role>(url).pipe(
-        map(c => c ? [c] : []),
-        catchError(err => throwError(() => err))
-    );
-
-    const requests = [
-      safeGet(urlByName),
-      safeGetId(urlById),
-      safeGet(urlByCnpj)
-    ];
-
-    return (requests as any[]).reduce((acc) => {
-      return acc;
-    }, this.http.get<Role[]>(urlByName));
+    return this.getRoleByName(trimmed);
   }
 
-  getRoleByName(name: string): Observable<any> {
-    const encoded = encodeURIComponent(name.trim());
-    return this.http.get<any[]>(`${this.apiRolesUrl}/name/${encoded}`).pipe(
-      map(arr => {
-        if (!arr || arr.length === 0) {
-          throw new Error('Role not found');
-        }
-        return arr[0];
-      })
-    );
-  }
-
-  searchRolesByNameAndCnpj(roleName: string, cnpj: string): Observable<Role[]> {
-    const encName = encodeURIComponent(roleName.trim());
-    const encCnpj = encodeURIComponent(cnpj.trim());
-    const url = `${this.apiRolesUrl}/rolename/${encName}/cnpj/${encCnpj}`;
-    return this.http.get<Role[]>(url).pipe(catchError(err => throwError(() => err)));
-  }
-
-  searchRolesByCnpj(cnpj: string): Observable<Role[]> {
-    const encoded = encodeURIComponent(cnpj);
-    return this.http.get<Role[]>(`${this.apiRolesUrl}/cnpj/${encoded}`)
+  getRoleById(roleId: string): Observable<Role[]> {
+    return this.http.get<Role[]>(`${this.apiRolesUrl}/id/${roleId}`)
       .pipe( catchError(err => throwError(() => err)));
   }
 
-  searchRoleById(roleId: string): Observable<Role[]> {
-    const encoded = encodeURIComponent(roleId);
-    return this.http.get<Role[]>(`${this.apiRolesUrl}/id/${encoded}`)
+  getRoleByName(roleName: string): Observable<Role[]> {
+    return this.http.get<Role[]>(`${this.apiRolesUrl}/name/${roleName}`)
+      .pipe( catchError(err => throwError(() => err)));
+  }
+
+  getRoleByNameAndSector(roleName: string, sectorName: string): Observable<Role[]> {
+    
+    return this.http.get<Role[]>(`${this.apiRolesUrl}/name/${roleName}/sector/${sectorName}`)
+      .pipe( catchError(err => throwError(() => err)));
+  }
+
+  getRoleByCnpj(cnpj: string): Observable<Role[]> {
+    return this.http.get<Role[]>(`${this.apiRolesUrl}/cnpj/${cnpj}`)
       .pipe( catchError(err => throwError(() => err)));
   }
 
   addRole(role: {name: string; sectorId: number }): Observable<Role> {
-    console.log("Role Post Request: ", role)
     return this.http.post<Role>(this.apiRolesUrl, role).pipe(
       catchError(err => throwError(() => err))
     );

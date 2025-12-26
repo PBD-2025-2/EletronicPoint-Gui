@@ -17,7 +17,7 @@
     .input-search-role1 {
       font-size: 18px;
       padding: 12px 16px;
-      width: 260px;
+      width: 320px;
       border: 2px solid $primary-color;
       border-radius: 6px;
     }
@@ -33,6 +33,7 @@
       background-color: $primary-color;
       padding: 14px;
       border-radius: 8px;
+      border-color: $primary-color;
       cursor: pointer;
 
       &:hover:not(:disabled) {
@@ -46,6 +47,7 @@
       &.search-btn {
         color: white;
         font-size: 16px;
+        
       }
 
       &.add-role-btn {
@@ -66,8 +68,7 @@
 }
 
 .roles-section {
-  margin-top: 24px;
-  padding: 8px;
+  margin-top: 18px;
   
   .role-list {
     max-height: 500px;
@@ -149,35 +150,35 @@
   }
 
   button {
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
 
-        padding: 0;
-        width: 36px;
-        height: 36px;
+    padding: 0;
+    width: 36px;
+    height: 36px;
 
-        display: flex;
-        align-items: center;
-        margin-left: 5px;
-        justify-content: center;
+    display: flex;
+    align-items: center;
+    margin-left: 5px;
+    justify-content: center;
 
-        box-sizing: border-box;
-        transition: opacity 0.15s ease;
-        outline: none;
+    box-sizing: border-box;
+    transition: opacity 0.15s ease;
+    outline: none;
 
-        &:hover {
-            opacity: 0.5;
-        }
-        
-        &.update-role-btn {
-            background-color: $update-btn-color;
-        }
-
-        &.delete-role-btn {
-            background-color: $delete-btn-color;
-        }    
+    &:hover {
+        opacity: 0.5;
     }
+    
+    &.update-role-btn {
+        background-color: $update-btn-color;
+    }
+
+    &.delete-role-btn {
+        background-color: $delete-btn-color;
+    }    
+  }
 }
 
 .pagination-controls {

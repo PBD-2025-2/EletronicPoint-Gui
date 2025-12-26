@@ -140,18 +140,21 @@ export class EmployeeComponent implements OnInit {
 
     this.employeeService.searchEmployees(term).subscribe({
       next: (data) => {
-
-        let employeeName = null;
+    
+        let employeeList: string[] = [];
         if (data && typeof data === 'object' && !Array.isArray(data)) {
-          employeeName = data.name;
+          employeeList.push(data.name);
+
         } else {
-          employeeName = data[0].name;
+          data.forEach( (emp: Employee) => {
+            employeeList.push(emp.name);
+          });
         }
 
         this.groups = [];
 
         // if the name is not empty
-        const employeeRoles = this.employeeService.getEmployeeRolesByName(employeeName).subscribe({
+        employeeList.forEach(employeeName => { this.employeeService.getEmployeeRolesByName(employeeName).subscribe({
           next: roles => {
             this.groups.push({
               expanded: false,
@@ -176,12 +179,14 @@ export class EmployeeComponent implements OnInit {
         }
         )
         this.currentPage = 1;
+      });
       },
       error: (err) => {
         this.notificationService.showError(err.message || "Employee not found!");
       }
     })
   }
+  
 
 
   get paginatedRoles(): Employee[] {

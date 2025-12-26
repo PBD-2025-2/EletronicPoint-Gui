@@ -25,6 +25,7 @@
     
   button {
     background-color: $primary-color;
+    border-color: $primary-color;
     padding: 14px;
     border-radius: 8px;
     cursor: pointer;
@@ -53,6 +54,8 @@
 }
 
 .roster-section {
+  margin-top: 18px;
+  
   .roster-list {
     max-height: 500px;
     overflow-y: auto;

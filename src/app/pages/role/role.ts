@@ -45,7 +45,7 @@ export class RoleComponent implements OnInit {
   pageSize = 9;
   totalItems = 0;
   totalPages = 0;
-console: any;
+  console: any;
 
   constructor(
     private roleService: RoleService,
@@ -65,21 +65,24 @@ console: any;
         this.totalPages = Math.ceil(this.totalItems / this.pageSize);
         this.paginateAndGroupRoles();
       },
-      error: err => {
+      error: (err) => {
         this.notificationService.showError("Error while loading roles");
       }
     });
   }
 
   searchRoles() {
-    console.log("CALLING SEARCH ROLES");
-
-    const nameTerm = this.searchTerm1.trim();
-    const cnpjTerm = this.searchTerm2.trim();
-
+    const roleName = this.searchTerm1.trim();
+    const sectorName = this.searchTerm2.trim();
     this.currentPage = 1;
 
-    if (!nameTerm && !cnpjTerm) {
+    if (!roleName && !sectorName) {
+      this.loadRoles();
+      return;
+    }
+
+    if (!roleName && sectorName) {
+      this.notificationService.showError("Please provide a role name to search by sector.");
       this.loadRoles();
       return;
     }
@@ -91,24 +94,61 @@ console: any;
       this.paginateAndGroupRoles();
     };
 
-    if (nameTerm && cnpjTerm) {
-      this.roleService.searchRolesByNameAndCnpj(nameTerm, cnpjTerm)
-        .subscribe({ next: handleSearchResponse, error: () => this.notificationService.showError("Erro na busca") });
-    } else if (cnpjTerm) {
-      console.log("SEARCHING BY CNPJ ONLY: ", cnpjTerm);
+    if (roleName && !sectorName) {
+      this.roleService.searchRoles(roleName).subscribe({
+      
+        next: (data) => { this.handleSearchRolesByName(data, handleSearchResponse); },
 
-
-      this.roleService.searchRolesByCnpj(cnpjTerm).subscribe({
-        next: handleSearchResponse,
-        error: (err) => this.notificationService.showError("CNPJ not found ")
+        error: (err) => { this.notificationService.showError(err.message || "Role not found "); }
       });
+    
+    }
+    else if (roleName && sectorName) {
+      this.roleService.searchRoles(roleName, sectorName).subscribe({
 
-    } else if (nameTerm) {
-      this.roleService.searchRoles(nameTerm).subscribe({
-        next: handleSearchResponse,
-        error: (err) => this.notificationService.showError("Name not found ")
+        next: (data) => { this.handleSearchRolesByNameAndSector(data, handleSearchResponse); },
+
+        error: (err) => { this.notificationService.showError("RoleName or SectorName not found"); }
       });
     }
+  }
+
+  handleSearchRolesByName(data: any, doIt: any) {
+    
+    let roleList: string[] = [];
+    if (data && typeof data === 'object' && !Array.isArray(data)) {
+      roleList.push(data.name);
+
+    } else {
+      data.forEach( (role: Role) => {
+        roleList.push(role.name);
+      });
+    }
+
+    this.groupedRoles = [];
+
+    roleList.forEach(roleName => { this.roleService.getRoleByName(roleName).subscribe({
+      next: doIt
+    })})
+  }
+
+  handleSearchRolesByNameAndSector(data: any, doIt: any) {
+    
+    let roleList: string[] = [];
+    if (data && typeof data === 'object' && !Array.isArray(data)) {
+      roleList.push(data.name);
+
+    } else {
+      data.forEach( (role: Role) => {
+        roleList.push(role.name);
+      });
+    }
+
+    this.groupedRoles = [];
+
+    roleList.forEach(roleName => { this.roleService.getRoleByName(roleName).subscribe({
+      next: doIt
+    })})
   }
 
   openAddRoleModal() {
@@ -132,7 +172,7 @@ console: any;
 
   handleAddRole(event: any) {
     if (!event) {
-      return this.notificationService.showError('Evento vazio');
+      return this.notificationService.showError("Event empty");
     };
 
     const roleName = event.name?.trim();
@@ -140,37 +180,32 @@ console: any;
     const sectorName = event.sectorName?.trim();
 
     if (!roleName || !companyName || !sectorName) {
-      return this.notificationService.showError('Preencha todos os campos!');
+      return this.notificationService.showError("Please provide all the fields!");
     }
 
     return this.addRole(roleName, companyName, sectorName);
   }
 
   handleUpdateRole(event: any) {
-    console.log("EVENT: ", event)
-    console.log("Selected Role: ", this.selectedRole)
     if (!event) {
-      return this.notificationService.showError('Evento vazio');
+      return this.notificationService.showError("Event empty");
     };
 
     const roleName = event.name?.trim();
     const sectorName = event.sectorName?.trim();
 
     if (!roleName || !sectorName) {
-      return this.notificationService.showError('Preencha todos os campos!');
+      return this.notificationService.showError("Please provide all the fields!");
     }
 
     return this.updateRole(this.selectedRole, roleName, sectorName)
   }
 
   handleDeleteRole(event: any) {
-    console.log("EVENT: ", event)
-    console.log("Selected Role: ", this.selectedRole)
     return this.deleteRole(this.selectedRole.id);
   }
 
   addRole(roleName: string, companyName: string, sectorName: string) {
-    console.log("Adding Role:", roleName, "Company:", companyName, "Sector:", sectorName)
     this.saving = true;
 
     this.getCompanyByName(companyName).pipe(
@@ -184,14 +219,14 @@ console: any;
 
     ).subscribe({
       next: () => {
-        this.notificationService.showSuccess('Sector created sucessfully!');
+        this.notificationService.showSuccess("Sector created sucessfully!");
         this.showAddRoleModal = false;
         this.saving = false;
         this.loadRoles();
       },
       error: err => {
         this.saving = false;
-        this.notificationService.showError(err.message || 'Error while creating Sector');
+        this.notificationService.showError(err.message || "Error while creating Sector");
       }
     });
   }
@@ -236,10 +271,9 @@ console: any;
 
   private getCompanyByName(companyName: string) {
     return this.companyService.getCompanyByName(companyName).pipe(
-      tap(company => console.log('COMPANY FOUND:', company)),
       switchMap(company => {
         if (!company?.id) {
-          return throwError(() => new Error('Empresa encontrada, mas sem ID'));
+          return throwError(() => new Error("Company not found"));
         }
         return of(company);
       })
@@ -247,13 +281,10 @@ console: any;
   }
 
   private getSectorByNameAndCompany(sectorName: string, companyId: number) {
-    console.log("sectorName:", sectorName)
-    console.log("companyId:", companyId)
     return this.roleService.getSectorByNameAndCompany(sectorName, companyId).pipe(
-      tap(sector => console.log('SECTOR FOUND:', sector)),
       switchMap(sector => {
         if (!sector?.id) {
-          return throwError(() => new Error('Setor não encontrado para esta empresa'));
+          return throwError(() => new Error("Sector not found in this company!"));
         }
         return of(sector);
       })
@@ -303,6 +334,5 @@ console: any;
       expanded: false
     }));
   }
-
 
 }

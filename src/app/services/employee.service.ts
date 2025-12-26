@@ -65,7 +65,7 @@ export class EmployeeService {
   }
 
   getEmployeeByName(name: string): Observable<Employee[]> {
-    console.log("Searching employee by name:", name);
+    
     return this.http.get<Employee[]>(`${this.apiUrlEmployee}/name/${name}`).pipe(
           catchError(err => throwError(() => err)));
   }
@@ -76,7 +76,7 @@ export class EmployeeService {
   }
 
   getEmployeeById(employeeId: string): Observable<Employee> {
-    console.log("Searching employee by ID:", employeeId);
+    
     return this.http.get<Employee>(`${this.apiUrlEmployee}/id/${employeeId}`);
   }
 
@@ -88,7 +88,6 @@ export class EmployeeService {
   }
   
   addEmployee(employee: Omit<Employee, 'id'>): Observable<Employee> {
-    console.log("Adding employee:", employee);
 
     return this.http.post<Employee>(this.apiUrlEmployee, employee).pipe(
       catchError(err => throwError(() => err))

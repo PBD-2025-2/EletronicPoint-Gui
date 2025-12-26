@@ -67,10 +67,8 @@ export class CompanyComponent implements OnInit {
   }
 
   openAddCompanyModal(type: 'company') {
-    console.log("Calling openModal2 with type:", type);
     this.modalType = type;
     this.showAddCompanyModal = true;
-
     this.modalTitle = 'Add Company';
     this.secondLabel = 'CNPJ';
     this.secondPlaceholder = '12345678910111';
@@ -78,14 +76,12 @@ export class CompanyComponent implements OnInit {
   }
   
   openUpdateCompanyModal(type: 'company', company: Company) {
-    console.log("Calling openModal2 with type:", type);
     this.modalType = type;
     this.showUpdateCompanyModal = true;
     this.selectedCompany = company
   }
   
   openDeleteCompanyModal(type: 'company', company: Company) {
-    console.log("Calling openModal2 with type:", type);
     this.modalType = type;
     this.showDeleteCompanyModal = true;
     this.selectedCompany = company
@@ -210,19 +206,16 @@ export class CompanyComponent implements OnInit {
       return;
     }
 
-    console.log("Searching for companies with term:", term);
     this.companyService.searchCompanies(term).subscribe({
       next: (data) => {
         
         this.companies = data;
-        console.log("Search results:", data);
         this.currentPage = 1;
-        }, 
+      }, 
 
       error: (err) => {
           this.notificationService.showError(err.message);
         }
       });
     }
-  
 }

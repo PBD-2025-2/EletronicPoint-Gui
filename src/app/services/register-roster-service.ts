@@ -75,18 +75,18 @@ export class RosterService {
   }
 
 
-   searchRoster(term: string): Observable<Roster[]> {
+  searchRoster(term: string): Observable<Roster[]> {
     const trimmed = term.trim();
     
-        // Input with only numbers
-        if (/^\d+$/.test(trimmed)) {
+    // Input with only numbers
+    if (/^\d+$/.test(trimmed)) {
 
-          // Search by ID
-          return this.searchRosterById(trimmed);
-        }
+      // Search by ID
+      return this.searchRosterById(trimmed);
+    }
 
-        // Search by name
-        return this.searchRosterByName(term);
+    // Search by name
+    return this.searchRosterByName(term);
   }
 
 
@@ -113,43 +113,37 @@ export class RosterService {
     );
   }
 
-   createDailyRoster(newDailyRoster: { 
+  createDailyRoster(newDailyRoster: { 
     name: string; 
     weeklyWorkload: number; 
-    schedules: { day: string; schedules: string[] }[]; // <- agora string[]
+    schedules: { day: string; schedules: string[] }[];
   }): Observable<DailyRoster> {
     return this.http.post<DailyRoster>(`${this.apiUrlRosters}/daily`, newDailyRoster);
   }
 
-
-
-    createRosterDuty(
-      newRosterDuty: { 
-        name: string; 
-        weeklyWorkload: number; 
-        dutySchedules: {
-          startTime: string,
-          workDuration: number,
-          timeOff: number
-        }}): Observable<RosterDuty> {
-          return this.http.post<RosterDuty>(`${this.apiUrlRosters}/duty`, newRosterDuty);
+  createRosterDuty(
+    newRosterDuty: { 
+      name: string; 
+      weeklyWorkload: number; 
+      dutySchedules: {
+        startTime: string,
+        workDuration: number,
+        timeOff: number
+      }}): Observable<RosterDuty> {
+        return this.http.post<RosterDuty>(`${this.apiUrlRosters}/duty`, newRosterDuty);
       }
 
     
-    getRosterByName(rosterName: string): Observable<Roster> {
-      const encoded = encodeURIComponent(rosterName.trim());
-      
-      return this.http.get<Roster>(`${this.apiUrlRosters}/name/${encoded}`).pipe(
-        map(r => {
-          if (!r) {
-            throw new Error('Roster not found');
-          }
-          return r;
-        })
-      );
-    }
-
+  getRosterByName(rosterName: string): Observable<Roster> {
+    const encoded = encodeURIComponent(rosterName.trim());
     
-
-      
+    return this.http.get<Roster>(`${this.apiUrlRosters}/name/${encoded}`).pipe(
+      map(r => {
+        if (!r) {
+          throw new Error('Roster not found');
+        }
+        return r;
+      })
+    );
+  } 
 }
