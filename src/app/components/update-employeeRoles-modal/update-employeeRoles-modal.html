@@ -1,0 +1,47 @@
+<div class="modal-overlay" (click)="close()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>{{ modalTitle }}</h2>
+    <form class="form-section">
+      <label>
+        Roster Name:
+        <input
+          placeholder="Roster Name"
+          type="text"
+          [(ngModel)]="rosterName"
+          name="rosterName"
+          required
+        />
+      </label>
+      
+      <label>
+        Role Name:
+        <input
+          placeholder="Role Name"
+          type="text"
+          [(ngModel)]="roleName"
+          name="roleName"
+          required
+        />
+      </label>
+
+      <label>
+        Role Status: 
+      </label>
+
+      <div class="radio-buttons">
+        <label>
+          <input type="radio" name="status" value="Ativo" [(ngModel)]="status"> Ativo
+        </label>
+
+        <label>
+          <input type="radio" name="status" value="Desativado" [(ngModel)]="status"> Desativado
+        </label>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn-cancel" (click)="close()">CANCEL</button>
+        <button type="button" class="btn-update" (click)="update()">UPDATE</button>
+      </div>
+    </form>
+  </div>
+</div>

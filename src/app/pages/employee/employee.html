@@ -12,41 +12,64 @@
     <button class="add-employee-btn" (click)="openAddEmployeeModal()">Add</button>
 </section>
 
-<app-add-employee-modal
-    *ngIf="showAddEmployeeModal"
-    [title]="modalTitle"
-    [secondLabel]="secondLabel"
-    [secondPlaceholder]="secondPlaceholder"
-    [secondKey]="secondKey"
-    (closeModal)="showAddEmployeeModal = false"
-    (saveItem)="handleSaveEmployee($event)">
-</app-add-employee-modal>
-
 <section class="employee-section">
   <div class="employee-list">
-    <label>Employees</label>
+    <label><h5><strong>Employees</strong></h5></label>
 
     <div class="employee-item" *ngFor="let group of groups" >
 
       <div class="employee-header" 
-      [class.disabled]="group.records.length === 0"
-      (click)=" group.records.length > 0 && (group.expanded = !group.expanded)">
+        [class.disabled]="group.employeeRoles.length === 0"
+        (click)=" group.employeeRoles.length > 0 && (group.expanded = !group.expanded)">
 
-        {{ group.employee.employeeName }}
-        <span 
-          class="toggle-icon"
-          *ngIf="group.records.length > 0"
-          >
-          {{ group.expanded ? '▲' : '▼' }}</span>
+
+        {{ group.employee.name }}
+
+        <div class="employee-header-actions" (click)="$event.stopPropagation()">
+          <button
+            type="button"
+            class="update-employee-btn"
+            (click)="openUpdateEmployeeModal(group.employee);">
+            <img src="assets/update-btn.svg" class="btn-icon">
+          </button>
+
+          <button
+              type="button"
+              class="delete-employee-btn"
+              (click)="openDeleteEmployeeModal(group.employee);">
+              <img src="assets/delete-btn.svg" class="btn-icon">
+          </button>
+
+          <span class="toggle-icon" *ngIf="group.employeeRoles.length > 0">
+            {{ group.expanded ? '▲' : '▼' }}
+          </span>
+        </div>        
       </div>
 
       <div class="employee-sublist" [class.expanded]="group.expanded" >
+          <h5><i>Employee Roles Details:</i></h5>
+      <div class="employee-details" *ngFor="let employeeRoles of group.employeeRoles; let i = index">
+          <div class="employeeRoles-info">
+            <div><strong>Company:</strong> {{ employeeRoles.role.sectors.company.name }}</div> 
+            <div><strong>Roster:</strong> {{ employeeRoles.roster.name }} - {{ employeeRoles.roster.type }} - {{ employeeRoles.roster.weeklyWorkload }}h</div> 
+            <div><strong>Sector:</strong> {{ employeeRoles.role.sectors.name }} |  <strong>Role:</strong> {{ employeeRoles.role.name }}</div>
+          </div>
+          <div class="employeeRoles-actions">
+            <button
+              type="button"
+              class="update-employeeRoles-btn"
+              (click)="openUpdateEmployeeRolesModal(employeeRoles);">
+              <img src="assets/update-btn.svg" class="btn-icon">
+            </button>
 
-      <div class="employee-details" *ngFor="let rec of group.records">
-          <div><strong>Roster:</strong> {{ rec.rosterName }} - {{ rec.rosterType }} - {{ rec.rosterHours }}h</div> 
-          <div><strong>Sector:</strong> {{ rec.sectorName }} ({{ rec.companyName }})</div>
-          <div><strong>Role:</strong> {{ rec.roleName }}</div>
-          <hr />
+            <button
+                type="button"
+                class="delete-employeeRoles-btn"
+                (click)="openDeleteEmployeeModal(group.employee);">
+                <img src="assets/delete-btn.svg" class="btn-icon">
+            </button>
+          </div>
+          <hr *ngIf="i < group.employeeRoles.length - 1">
         </div>
       </div>
     </div>
@@ -79,3 +102,34 @@
         Next &raquo;
     </button>
 </div>
+
+<app-add-employee-modal
+    *ngIf="showAddEmployeeModal"
+    [title]="modalTitle"
+    [secondLabel]="secondLabel"
+    [secondPlaceholder]="secondPlaceholder"
+    [secondKey]="secondKey"
+    (closeModal)="showAddEmployeeModal = false"
+    (saveItem)="handleSaveEmployee($event)">
+</app-add-employee-modal>
+
+<app-update-employee-modal
+    *ngIf="showUpdateEmployeeModal"
+    [employee]="selectedEmployee"
+    (closeModal)="showUpdateEmployeeModal = false"
+    (updateItem)="handleUpdateEmployee($event)">
+</app-update-employee-modal>
+
+<app-delete-employee-modal
+    *ngIf="showDeleteEmployeeModal"
+    [employee]="selectedEmployee"
+    (closeModal)="showDeleteEmployeeModal = false"
+    (deleteItem)="handleDeleteEmployee($event)">
+</app-delete-employee-modal>
+
+<app-update-employeeRoles-modal
+    *ngIf="showUpdateEmployeeRolesModal"
+    [employeeRoles]="selectedEmployeeRoles"
+    (closeModal)="showUpdateEmployeeRolesModal = false"
+    (updateItem)="handleUpdateEmployeeRoles($event)">
+</app-update-employeeRoles-modal>

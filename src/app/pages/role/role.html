@@ -22,9 +22,7 @@
 
 <section class="roles-section">
   <div class="role-list">
-    <label>
-        Companies
-    </label>
+    <label><h5><strong>Companies</strong></h5></label>
 
     <div class="company-item" *ngFor="let group of groupedRoles">
 
@@ -37,6 +35,7 @@
         </div>
 
         <div class="role-sublist" [class.expanded]="group.expanded">
+          <h5><i>Role Details:</i></h5>
             <div class="role-item" *ngFor="let role of group.roles"> 
 
               <div class= "role-info">

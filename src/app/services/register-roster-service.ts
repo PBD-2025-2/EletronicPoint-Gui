@@ -28,11 +28,11 @@ export interface Roster {
   name: string;
   type: string;
   weeklyWorkload: number;
-  dailySchedules: {
+  dailySchedules?: {
       day: string,
       schedules: string[]
   }[];
-  dutySchedules: 
+  dutySchedules?: 
   {
     startTime: string,
     workDuration: number,
@@ -100,8 +100,7 @@ export class RosterService {
   searchRosterByName(rosterName: string): Observable<Roster[]> {
     const encName = encodeURIComponent(rosterName.trim());
     const url = `${this.apiUrlRosters}/name/${encName}`;
-
-    // The API returns an object, so transform it into an array
+    console.log("url: ", url)
     return this.http.get<Roster>(url).pipe(
       map(r => {
         if (!r) {
@@ -113,7 +112,7 @@ export class RosterService {
     );
   }
 
-   createDailyRoster(newDailyRoster: { 
+  createDailyRoster(newDailyRoster: { 
     name: string; 
     weeklyWorkload: number; 
     schedules: { day: string; schedules: string[] }[]; // <- agora string[]

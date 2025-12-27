@@ -59,25 +59,30 @@
   }
 
   .employee-item {
-    outline: 1px solid $secondary-color;
-    border: none;
+    border: 1px solid $secondary-color;
     border-radius: 8px;
     margin-bottom: 8px;
+    max-height: 450px;
 
     .employee-header {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
+
       padding: 12px;
       font-size: 18px;
-      cursor: pointer;
+      border-radius: 8px;
       background-color: white;
       border: 1px solid $primary-color;
-      border-radius: 8px;
-      background-color: #fff;
+
+      cursor: pointer;
+
+      &:last-child {
+        border-bottom: none;
+      }
 
       &:hover {
-        background-color: color.adjust($primary-color, $lightness: 8%);
+        background-color: color.adjust($primary-color, $lightness: 40%);
       }
 
       .toggle-icon { 
@@ -87,11 +92,43 @@
         } 
       }
 
-      .update-roster-btn {
-        background: $primary-color;
-      }
+    }
+
+.employee-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  button {
+    border: none;
+    border-radius: 8px;
+
+    padding: 0;
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    justify-content: center;
+
+    box-sizing: border-box;
+    transition: opacity 0.15s ease;
+    outline: none;
+
+    &:hover {
+        opacity: 0.5;
     }
     
+    &.update-employee-btn {
+        background-color: $update-btn-color;
+    }
+
+    &.delete-employee-btn {
+        background-color: $delete-btn-color;
+    }
+    }
+  }
 
   }
   .employee-header.disabled {
@@ -125,8 +162,63 @@
   }
 
   .employee-details {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center; 
+    justify-content: space-between;
+
     padding: 4px;
     margin-bottom: 0.5rem;
     padding-left: 0.5rem;
+  }
+
+  .employee-info {
+    flex: 1
+  }
+
+  hr {
+    margin: 12px 0;
+    border: none;
+    border-top: 1px solid $primary-color;
+    width: 100%;
+  }
+
+  .employeeRoles-actions {
+    gap: 5px;        
+    display: flex;
+    margin-left: auto;
+  }
+
+  .employeeRoles-actions button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 8px;
+    padding: 0;
+    transition: opacity 0.15s ease;
+
+    &:hover {
+      opacity: 0.5;
+    }
+    
+    &.update-employee-btn {
+      background-color: $update-btn-color;
+    }
+
+    &.delete-employee-btn {
+      background-color: $delete-btn-color;
+    }
+    
+    &.update-employeeRoles-btn {
+      background-color: $update-btn-color;
+    }
+
+    &.delete-employeeRoles-btn {
+      background-color: $delete-btn-color;
+    }
   }
 }

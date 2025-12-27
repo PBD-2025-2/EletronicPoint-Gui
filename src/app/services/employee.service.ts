@@ -1,26 +1,25 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, Observable } from 'rxjs';
+import { catchError, Observable, retry } from 'rxjs';
 import { throwError } from 'rxjs';
 import { environment } from '../environments/environment';
+import { Role } from './role.service';
+import { Roster } from './register-roster-service';
 
 export interface EmployeeRoles {
   id: number;
   status: string,
-  roster: {
-    name: string,
-    type: string,
-    weeklyWorkload: string,
-  }
-  employeeName: string,
-  role: {
-    name: string,
-    sectors: {
-      id: number,
-      name: string,
-      company: { name: string }
-    }
-  }
+  employee: Employee,
+  role: Role,
+  roster: Roster
+}
+
+export interface EmployeeRolesPutRequest {
+  id: number
+  status: boolean
+  idRoster: number, 
+  employeeId:number, 
+  roleId: number, 
 }
 
 export interface Employee {
@@ -55,7 +54,7 @@ export class EmployeeService {
     if (/^\d+$/.test(trimmed)) {
 
       if (trimmed.length === 11) {
-       return this.getEmployeeByCpf(trimmed);
+        return this.getEmployeeByCpf(trimmed);
       }
 
       return this.getEmployeeById(trimmed);
@@ -93,5 +92,17 @@ export class EmployeeService {
     return this.http.post<Employee>(this.apiUrlEmployee, employee).pipe(
       catchError(err => throwError(() => err))
     );
+  }
+
+  updateEmployee(employee: Employee): Observable<Employee> {
+    return this.http.put<Employee>(`${this.apiUrlEmployee}/${employee.id}`, employee);
+  }
+
+  deleteEmployee(id: number): Observable<Employee> {
+    return this.http.delete<Employee>(`${this.apiUrlEmployee}/${id}`);
+  }
+
+  updateEmployeeRoles(employeePutRequest: EmployeeRolesPutRequest): Observable<EmployeeRoles> {
+    return this.http.put<EmployeeRoles>(`${this.apiUrlEmployeeRoles}/${employeePutRequest.id}`, employeePutRequest);
   }
 }

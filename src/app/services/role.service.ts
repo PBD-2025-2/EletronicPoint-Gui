@@ -3,9 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { catchError, first, map } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
 import { environment } from '../environments/environment';
+import { Company } from './company.service';
 
 export interface AttachRoleData {
-  status: string;
+  status?: string;
   idRoster: number;
   employeeId: number;
   roleId: number;
@@ -17,10 +18,7 @@ export interface Role {
   sectors: {
     id?: number;
     name: string;
-    company: {
-      id: number;
-      name: string;
-    }
+    company: Company
   };
 }
 
@@ -88,6 +86,13 @@ export class RoleService {
     const encName = encodeURIComponent(roleName.trim());
     const encCnpj = encodeURIComponent(cnpj.trim());
     const url = `${this.apiRolesUrl}/rolename/${encName}/cnpj/${encCnpj}`;
+    return this.http.get<Role[]>(url).pipe(catchError(err => throwError(() => err)));
+  }
+  
+  searchRolesByNameAndCompanyId(roleName: string, id: number): Observable<Role[]> {
+    const encName = encodeURIComponent(roleName.trim());
+    const url = `${this.apiRolesUrl}/roleName/${encName}/companyId/${id}`;
+    console.log("url: ", url)
     return this.http.get<Role[]>(url).pipe(catchError(err => throwError(() => err)));
   }
 
