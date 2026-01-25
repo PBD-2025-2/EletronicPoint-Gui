@@ -4,17 +4,6 @@
 
     <form class="form-section">
       <label>
-        Status:
-        <input
-          placeholder="Status"
-          type="text"
-          [(ngModel)]="status"
-          name="status"
-          required
-        />
-      </label>
-
-      <label>
         RosterName:
         <input
           placeholder="RosterName"
@@ -24,18 +13,7 @@
           required
         />
       </label>
-      
-      <label>
-        EmployeeName:
-        <input
-          placeholder="employeeName"
-          type="text"
-          [(ngModel)]="employeeName"
-          name="employeeName"
-          required
-        />
-      </label>
-      
+
       <label>
         RoleName:
         <input
@@ -46,6 +24,39 @@
           required
         />
       </label>
+      
+      <label>
+        EmployeeCPF:
+        <input
+          placeholder="employeeCPF"
+          type="text"
+          [(ngModel)]="employeeCPF"
+          name="employeeCPF"
+          required
+        />
+      </label>
+      
+      <label>
+        CompanyCNPJ:
+        <input
+          placeholder="companyCNPJ"
+          type="text"
+          [(ngModel)]="companyCNPJ"
+          name="companyCNPJ"
+          required
+        />
+      </label>
+
+      <label>Status: </label>
+      <div class="radio-buttons">
+        <label>
+          <input type="radio" name="status" value="Ativo" [(ngModel)]="status"> Ativo
+        </label>
+
+        <label>
+          <input type="radio" name="status" value="Desativado" [(ngModel)]="status"> Desativado
+        </label>
+      </div>
 
       <div class="actions">
         <button type="button" (click)="closeAttach()">CANCEL</button>
