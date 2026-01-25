@@ -1,26 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, Observable, retry } from 'rxjs';
+import { catchError, Observable } from 'rxjs';
 import { throwError } from 'rxjs';
 import { environment } from '../environments/environment';
-import { Role } from './role.service';
-import { Roster } from './register-roster-service';
-
-export interface EmployeeRoles {
-  id: number;
-  status: string,
-  employee: Employee,
-  role: Role,
-  roster: Roster
-}
-
-export interface EmployeeRolesPutRequest {
-  id: number
-  status: boolean
-  idRoster: number, 
-  employeeId:number, 
-  roleId: number, 
-}
 
 export interface Employee {
   id: number,
@@ -34,23 +16,12 @@ export interface Employee {
 
 export class EmployeeService {
   private apiUrlEmployee = `${environment.apiUrl}/eletronicPoint/api/v1/employees`;
-  private apiUrlEmployeeRoles = `${environment.apiUrl}/eletronicPoint/api/v1/employees_roles`;
 
   constructor(private http: HttpClient) {}
-
-  getAllEmployees(): Observable<Employee[]> {
-    return this.http.get<Employee[]>(this.apiUrlEmployee).pipe(
-          catchError(err => throwError(() => err)));;
-  }
-
-  getAllEmployeesRoles(): Observable<EmployeeRoles[]> {
-    return this.http.get<EmployeeRoles[]>(this.apiUrlEmployeeRoles);
-  }
 
   searchEmployees(term: string): Observable<any> {
     const trimmed = term.trim();
 
-    // Input with only numbers
     if (/^\d+$/.test(trimmed)) {
 
       if (trimmed.length === 11) {
@@ -61,6 +32,11 @@ export class EmployeeService {
     }
 
     return this.getEmployeeByName(trimmed)
+  }
+
+  getAllEmployees(): Observable<Employee[]> {
+    return this.http.get<Employee[]>(this.apiUrlEmployee).pipe(
+          catchError(err => throwError(() => err)));;
   }
 
   getEmployeeByName(name: string): Observable<Employee[]> {
@@ -78,13 +54,6 @@ export class EmployeeService {
     console.log("Searching employee by ID:", employeeId);
     return this.http.get<Employee>(`${this.apiUrlEmployee}/id/${employeeId}`);
   }
-
-  getEmployeeRolesByName(name: string): Observable<EmployeeRoles[]> {
-    const encoded = encodeURIComponent(name.trim());
-    return this.http.get<EmployeeRoles[]>(
-      `${this.apiUrlEmployeeRoles}/name/${encoded}`).pipe(
-          catchError(err => throwError(() => err)));
-  }
   
   addEmployee(employee: Omit<Employee, 'id'>): Observable<Employee> {
     console.log("Adding employee:", employee);
@@ -100,9 +69,5 @@ export class EmployeeService {
 
   deleteEmployee(id: number): Observable<Employee> {
     return this.http.delete<Employee>(`${this.apiUrlEmployee}/${id}`);
-  }
-
-  updateEmployeeRoles(employeePutRequest: EmployeeRolesPutRequest): Observable<EmployeeRoles> {
-    return this.http.put<EmployeeRoles>(`${this.apiUrlEmployeeRoles}/${employeePutRequest.id}`, employeePutRequest);
   }
 }

@@ -1,14 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { Employee, EmployeeRoles, EmployeeRolesPutRequest, EmployeeService } from '../../services/employee.service';
 import { CommonModule } from '@angular/common';
-import { NotificationService } from '../../services/notification.service';
-import { Roster, RosterService } from '../../services/register-roster-service';
+import { Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { AddEmployeeModal } from '../../components/add-employee-modal/add-employee-modal';
-import { UpdateEmployeeModalComponent } from '../../components/update-employee-modal/update-employee-modal';
 import { DeleteEmployeeModalComponent } from '../../components/delete-employee-modal/delete-employee-modal';
-import { UpdateEmployeeRolesModalComponent } from '../../components/update-employeeRoles-modal/update-employeeRoles-modal';
-import { map, switchMap } from 'rxjs';
-import { RoleService } from '../../services/role.service';
+import { EmployeeRolesComponent } from '../../components/employeeRoles-modal/employeeRoles-modal';
+import { UpdateEmployeeModalComponent } from '../../components/update-employee-modal/update-employee-modal';
+import { Employee, EmployeeService } from '../../services/employee.service';
+import { EmployeeRoles, EmployeeRoleService } from '../../services/employeeRoles.service';
+import { NotificationService } from '../../services/notification.service';
+import { Roster } from '../../services/roster.service';
 
 interface EmployeesFieldExtractor {
   rosterName: string,
@@ -18,17 +21,19 @@ interface EmployeesFieldExtractor {
 
 @Component({
   selector: 'app-employee',
-  imports: [CommonModule, AddEmployeeModal, UpdateEmployeeModalComponent, DeleteEmployeeModalComponent, UpdateEmployeeRolesModalComponent],
+  imports: [MatTableModule, MatPaginatorModule, MatFormFieldModule,MatInputModule, CommonModule, AddEmployeeModal, UpdateEmployeeModalComponent, DeleteEmployeeModalComponent, EmployeeRolesComponent],
   templateUrl: './employee.html',
   styleUrl: './employee.scss'
 })
 export class EmployeeComponent implements OnInit {
 
   employees: Employee[] = [];
+  rosters: Roster[] = [];
   searchTerm: string = '';
   showAddEmployeeModal = false;
   showUpdateEmployeeModal = false;
   showDeleteEmployeeModal = false;
+  showViewDetailsEmployessRolesModal = false;
   showUpdateEmployeeRolesModal = false;
   errorMessage: string | null = null;
   successMessage: string | null = null;
@@ -40,55 +45,164 @@ export class EmployeeComponent implements OnInit {
   secondKey = '';
 
   selectedEmployee!: Employee;
+  selectedEmployeeName: string = '';
   selectedEmployeeRoles!: EmployeeRoles;
+  selectedEmployeeRolesList!: EmployeeRoles[];
 
-  rosters: Roster[] = [];
+  filterValues = {id:'', name:''};
+
+  displayedColumns: string[] = ['id', 'name', 'actions'];
+  dataSource = new MatTableDataSource<Employee>();
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChildren('input') inputs!:QueryList<ElementRef<HTMLInputElement>>;
 
   groups: {
-    expanded: boolean;
     employee: Employee;
     employeeRoles: EmployeeRoles[];
   }[] = [];
 
   constructor(
-    private roleService: RoleService,
-    private rosterService: RosterService,
     private employeeService: EmployeeService,
+    private employeeRolesService: EmployeeRoleService,
     private notificationService: NotificationService
   ) { }
 
-  currentPage: number = 1;
-  itemsPerPage: number = 10;
-
-
   ngOnInit() {
+    this.loadEmployees();
+
+    this.dataSource.filterPredicate = function(data, filter: string)  {
+      const parsedFilter = JSON.parse(filter);
+
+      const onId = !parsedFilter.id || data.id?.toString().includes(parsedFilter.id);
+      const onName = !parsedFilter.name || data.name?.toLowerCase().trim().includes(parsedFilter.name);
+
+      return onId && onName;
+    };
+  }
+
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+  }
+
+  applyFilter() {
+    this.dataSource.filter = JSON.stringify(this.filterValues);
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  resetFilters() {
+    this.inputs.forEach(input => input.nativeElement.value = '');
+
+    this.filterValues = {id: '', name: ''};
+    this.dataSource.filter = '';
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+
     this.loadEmployees();
   }
 
-  loadEmployees() {
-  this.groups = [];
+  filterById(event: Event) {
+    this.filterValues.id = (event.target as HTMLInputElement).value.trim()
+    this.applyFilter()
+  }
 
-  this.employeeService.getAllEmployees().subscribe(employees => {
-    employees.forEach(emp => {
-      this.employeeService.getEmployeeRolesByName(emp.name).subscribe({
-        next: roles => {
-          this.groups.push({
-            expanded: false,
-            employee: { id: emp.id, name: emp.name },
-            employeeRoles: roles
-          });
-        },
-        error: () => {
-          this.groups.push({
-            expanded: false,
-            employee: { id: emp.id, name: emp.name },
-            employeeRoles: []
-          });
-        }
+  filterByEmployeeName(event: Event) {
+    this.filterValues.name = (event.target as HTMLInputElement).value.trim().toLocaleLowerCase();
+    this.applyFilter()
+  }
+
+  filterByCpf(event: Event) {
+    const cpf = (event.target as HTMLInputElement).value.trim();
+
+    if (!cpf) {
+      this.loadEmployees()
+      return;
+    }
+
+    this.employeeService.getEmployeeByCpf(cpf).subscribe({
+      next: (employees) => {
+        const employee = employees[0]
+        this.dataSource.data = employee ? [employee] : [];
+      },
+      error: ()=> {
+        this.dataSource.data = [];
+      }
+    })
+  }
+
+  loadEmployees() {
+    this.groups = [];
+
+    this.employeeService.getAllEmployees().subscribe(employees => {
+      this.dataSource.data = employees;
+
+      employees.forEach(emp => {
+        this.employeeRolesService.getEmployeeRolesByName(emp.name).subscribe({
+          next: roles => {
+            this.groups.push({
+              employee: { id: emp.id, name: emp.name },
+              employeeRoles: roles
+            });
+          },
+          error: () => {
+            this.groups.push({
+              employee: { id: emp.id, name: emp.name },
+              employeeRoles: []
+            });
+          }
+        });
       });
     });
-  });
-}
+  }
+
+  searchEmployees() {
+    const term = this.searchTerm?.trim();
+    if (!term) {
+      this.loadEmployees();
+      return;
+    }
+
+    this.employeeService.searchEmployees(term).subscribe({
+      next: (data) => {
+
+        let name = null;
+        let id = null;
+
+        if (data && typeof data === 'object' && !Array.isArray(data)) {
+          id = data.id
+          name = data.name;
+        } else {
+          name = data[0].name;
+        }
+
+        this.groups = [];
+
+        this.employeeRolesService.getEmployeeRolesByName(name).subscribe({
+          next: roles => {
+            this.groups.push({
+              employee: { id:id, name: name },
+              employeeRoles: roles
+            });
+          },
+          error: (err) => {
+            this.groups.push({
+              employee: { id, name },
+              employeeRoles: []
+            });
+          }
+        }
+        )
+      },
+      error: (err) => {
+        this.notificationService.showError(err.message || "Employee not found!");
+      }
+    })
+  }
 
   openAddEmployeeModal() {
     this.showAddEmployeeModal = true;
@@ -106,6 +220,15 @@ export class EmployeeComponent implements OnInit {
   openDeleteEmployeeModal(employee: Employee) {
     this.showDeleteEmployeeModal = true;
     this.selectedEmployee = employee;
+  }
+
+  openViewDetailsEmployessRolesModal(employee : Employee) {
+    this.selectedEmployeeName = employee.name;
+    this.employeeRolesService.getEmployeeRolesByEmployeeId(employee.id).subscribe(employeesRoles => {
+      this.selectedEmployeeRolesList = employeesRoles;
+      this.showViewDetailsEmployessRolesModal = true;
+      }
+    )
   }
 
   openUpdateEmployeeRolesModal(employeeRoles : EmployeeRoles) {
@@ -129,11 +252,6 @@ export class EmployeeComponent implements OnInit {
     return this.deleteEmployee(this.selectedEmployee.id)
   }
 
-  handleUpdateEmployeeRoles(event: any) {
-    const employeeRolesFieldExtractor: EmployeesFieldExtractor = { rosterName: event.rosterName, roleName: event.roleName, status: event.status }
-    return this.updateEmployeeRoles(employeeRolesFieldExtractor)
-  }
-
   addEmployee(name: string, cpf: string) {
     const newEmployee = {name: name, cpf: cpf};
     this.saving = true;
@@ -141,7 +259,6 @@ export class EmployeeComponent implements OnInit {
     this.employeeService.addEmployee(newEmployee).subscribe({
       next: (created) => {
         this.employees = [...this.employees, created];
-        this.currentPage = this.totalPages;
         this.saving = false;
         this.showAddEmployeeModal = false;
         this.notificationService.showSuccess("Employee created successfully");
@@ -186,116 +303,4 @@ export class EmployeeComponent implements OnInit {
       }
     });
   }
-
-  updateEmployeeRoles(employeeRolesFieldExtractor: EmployeesFieldExtractor) {
-    console.log("employeeRolesFieldExtractor: ", employeeRolesFieldExtractor)
-    this.rosterService.searchRosterByName(employeeRolesFieldExtractor.rosterName).pipe(
-      switchMap(rosters => {
-        return this.roleService.searchRolesByNameAndCompanyId(employeeRolesFieldExtractor.roleName, this.selectedEmployeeRoles.role.sectors.company.id).pipe(
-          switchMap(roles => {
-            const role = roles[0];
-            const roster = rosters[0]
-            const status = this.convertStatusToBoolean(employeeRolesFieldExtractor.status)
-            
-            console.log("role: ", role)
-            console.log("roster: ", roster)
-            console.log("status: ", status)
-
-            const employeeRolesPutRequest = {
-              id: this.selectedEmployeeRoles.id,
-              status: status,
-              idRoster: roster.id, 
-              employeeId:this.selectedEmployeeRoles.employee.id, 
-              roleId: role.id, 
-            }
-
-            console.log("employeeRolesPutRequest: ", employeeRolesPutRequest)
-            return this.employeeService.updateEmployeeRoles(employeeRolesPutRequest)
-          })
-        )
-      })
-    ).subscribe({
-        next: () => {
-          this.loadEmployees()
-          this.showUpdateEmployeeRolesModal = false;
-          this.notificationService.showSuccess("Employee Roles Details updated successfully");
-        },
-        error: (err) => {
-          console.log("ERROR: ", err)
-          this.notificationService.showError("Error while updating Employee Roles Details");
-          this.showUpdateEmployeeRolesModal = false;
-        }
-      });
-  }
-
-  searchEmployees() {
-    const term = this.searchTerm?.trim();
-    if (!term) {
-      this.loadEmployees();
-      return;
-    }
-
-    this.employeeService.searchEmployees(term).subscribe({
-      next: (data) => {
-
-        let name = null;
-        let id = null;
-        if (data && typeof data === 'object' && !Array.isArray(data)) {
-          id = data.id
-          name = data.name;
-        } else {
-          name = data[0].name;
-        }
-
-        this.groups = [];
-
-        // if the name is not empty
-        const employeeRoles = this.employeeService.getEmployeeRolesByName(name).subscribe({
-          next: roles => {
-            this.groups.push({
-              expanded: false,
-              employee: { id:id, name: name },
-              employeeRoles: roles
-            });
-          },
-          error: (err) => {
-            this.groups.push({
-              expanded: false,
-              employee: { id, name },
-              employeeRoles: []
-            });
-          }
-        }
-        )
-        this.currentPage = 1;
-      },
-      error: (err) => {
-        this.notificationService.showError(err.message || "Employee not found!");
-      }
-    })
-  }
-
-  get paginatedRoles(): Employee[] {
-    const start = (this.currentPage - 1) * this.itemsPerPage;
-    return this.employees.slice(start, start + this.itemsPerPage);
-  }
-
-  get totalPages(): number {
-    return Math.ceil(this.employees.length / this.itemsPerPage);
-  }
-
-  getPagesArray(): number[] {
-    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
-  }
-
-  changePage(page: number) {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-    }
-  }
-
-  private convertStatusToBoolean(status: string): boolean {
-    return status === 'Ativo';
-  }
-
 }

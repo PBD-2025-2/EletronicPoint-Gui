@@ -1,135 +1,95 @@
 <section class="find-section">
-    <div class="search-container">
-        <input
-            type="text"
-            (input)="searchTerm = $event.target.value"
-            class="input-search-employee"
-            placeholder="Enter an ID or employee name"
-        />
-        <button class="search-btn" (click)="searchEmployees()">Search</button>
+    <div class="filters">
+        <mat-form-field appearance="outline">
+            <mat-label>Filter by Id</mat-label>
+            <input matInput (keyup)="filterById($event)" placeholder="Ex. 123" #input />
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+            <mat-label>Filter by Name</mat-label>
+            <input matInput (keyup)="filterByEmployeeName($event)" placeholder="Ex. ABDCDEFG" #input />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Filter by CPF</mat-label>
+            <input matInput (keyup)="filterByCpf($event)" placeholder="12345678912345" #input />
+        </mat-form-field>
+
+        <button class="reset-filters-btn" (click)="resetFilters()">Reset Filters</button>
     </div>
 
-    <button class="add-employee-btn" (click)="openAddEmployeeModal()">Add</button>
+    <button class="add-employee-btn" (click)="openAddEmployeeModal()">Add Employee</button>
 </section>
 
 <section class="employee-section">
-  <div class="employee-list">
-    <label><h5><strong>Employees</strong></h5></label>
 
-    <div class="employee-item" *ngFor="let group of groups" >
+    <div class="table-wrapper">
+        <div class="table-inner">
+            <table mat-table [dataSource]="dataSource" class="employees-table">
+                <ng-container matColumnDef="id">
+                    <th mat-header-cell *matHeaderCellDef>ID</th>
+                    <td mat-cell *matCellDef="let employee">{{ employee.id }}</td>
+                </ng-container>
 
-      <div class="employee-header" 
-        [class.disabled]="group.employeeRoles.length === 0"
-        (click)=" group.employeeRoles.length > 0 && (group.expanded = !group.expanded)">
+                <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef>Name</th>
+                    <td mat-cell *matCellDef="let employee">{{ employee.name }}</td>
+                </ng-container>
 
+                <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef>Actions</th>
+                    <td mat-cell *matCellDef="let employee">
+                        <div class="employee-actions" (click)="$event.stopPropagation()">
+                            <button type="button" class="view-employee-btn"
+                                (click)="openViewDetailsEmployessRolesModal(employee);">
+                                <img src="assets/view-btn.svg" class="btn-icon">
+                            </button>
 
-        {{ group.employee.name }}
+                            <button type="button" class="update-employee-btn"
+                                (click)="openUpdateEmployeeModal(employee);">
+                                <img src="assets/update-btn.svg" class="btn-icon">
+                            </button>
 
-        <div class="employee-header-actions" (click)="$event.stopPropagation()">
-          <button
-            type="button"
-            class="update-employee-btn"
-            (click)="openUpdateEmployeeModal(group.employee);">
-            <img src="assets/update-btn.svg" class="btn-icon">
-          </button>
+                            <button type="button" class="delete-employee-btn"
+                                (click)="openDeleteEmployeeModal(employee);">
+                                <img src="assets/delete-btn.svg" class="btn-icon">
+                            </button>
 
-          <button
-              type="button"
-              class="delete-employee-btn"
-              (click)="openDeleteEmployeeModal(group.employee);">
-              <img src="assets/delete-btn.svg" class="btn-icon">
-          </button>
+                        </div>
+                    </td>
+                </ng-container>
 
-          <span class="toggle-icon" *ngIf="group.employeeRoles.length > 0">
-            {{ group.expanded ? '▲' : '▼' }}
-          </span>
-        </div>        
-      </div>
-
-      <div class="employee-sublist" [class.expanded]="group.expanded" >
-          <h5><i>Employee Roles Details:</i></h5>
-      <div class="employee-details" *ngFor="let employeeRoles of group.employeeRoles; let i = index">
-          <div class="employeeRoles-info">
-            <div><strong>Company:</strong> {{ employeeRoles.role.sectors.company.name }}</div> 
-            <div><strong>Roster:</strong> {{ employeeRoles.roster.name }} - {{ employeeRoles.roster.type }} - {{ employeeRoles.roster.weeklyWorkload }}h</div> 
-            <div><strong>Sector:</strong> {{ employeeRoles.role.sectors.name }} |  <strong>Role:</strong> {{ employeeRoles.role.name }}</div>
-          </div>
-          <div class="employeeRoles-actions">
-            <button
-              type="button"
-              class="update-employeeRoles-btn"
-              (click)="openUpdateEmployeeRolesModal(employeeRoles);">
-              <img src="assets/update-btn.svg" class="btn-icon">
-            </button>
-
-            <button
-                type="button"
-                class="delete-employeeRoles-btn"
-                (click)="openDeleteEmployeeModal(group.employee);">
-                <img src="assets/delete-btn.svg" class="btn-icon">
-            </button>
-          </div>
-          <hr *ngIf="i < group.employeeRoles.length - 1">
+                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+                <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell" colspan="4">No data matching the filter.</td>
+                </tr>
+            </table>
         </div>
-      </div>
     </div>
-  </div>
+
+    <mat-paginator 
+        [pageSize]="10" 
+        [pageSizeOptions]="[10,50,100]" 
+        showFirstLastButtons>
+    </mat-paginator>
+
 </section>
 
-<div class="pagination-controls" *ngIf="totalPages > 1">
-    <button 
-        (click)="changePage(currentPage - 1)" 
-        [disabled]="currentPage === 1"
-        class="pagination-btn">
-        &laquo; Previous
-    </button>
-
-    <ng-container *ngFor="let pageNum of getPagesArray()">
-        <button
-            (click)="changePage(pageNum)"
-            [class.active-page]="currentPage === pageNum"
-            class="page-number-btn">
-            {{ pageNum }}
-        </button>
-    </ng-container>
-
-    <span class="page-status"> Page {{ currentPage }}/{{ totalPages }} </span>
-
-    <button 
-        (click)="changePage(currentPage + 1)" 
-        [disabled]="currentPage === totalPages"
-        class="pagination-btn">
-        Next &raquo;
-    </button>
-</div>
-
-<app-add-employee-modal
-    *ngIf="showAddEmployeeModal"
-    [title]="modalTitle"
-    [secondLabel]="secondLabel"
-    [secondPlaceholder]="secondPlaceholder"
-    [secondKey]="secondKey"
-    (closeModal)="showAddEmployeeModal = false"
+<app-add-employee-modal *ngIf="showAddEmployeeModal" [title]="modalTitle" [secondLabel]="secondLabel"
+    [secondPlaceholder]="secondPlaceholder" [secondKey]="secondKey" (closeModal)="showAddEmployeeModal = false"
     (saveItem)="handleSaveEmployee($event)">
 </app-add-employee-modal>
 
-<app-update-employee-modal
-    *ngIf="showUpdateEmployeeModal"
-    [employee]="selectedEmployee"
-    (closeModal)="showUpdateEmployeeModal = false"
-    (updateItem)="handleUpdateEmployee($event)">
+<app-update-employee-modal *ngIf="showUpdateEmployeeModal" [employee]="selectedEmployee"
+    (closeModal)="showUpdateEmployeeModal = false" (updateItem)="handleUpdateEmployee($event)">
 </app-update-employee-modal>
 
-<app-delete-employee-modal
-    *ngIf="showDeleteEmployeeModal"
-    [employee]="selectedEmployee"
-    (closeModal)="showDeleteEmployeeModal = false"
-    (deleteItem)="handleDeleteEmployee($event)">
+<app-delete-employee-modal *ngIf="showDeleteEmployeeModal" [employee]="selectedEmployee"
+    (closeModal)="showDeleteEmployeeModal = false" (deleteItem)="handleDeleteEmployee($event)">
 </app-delete-employee-modal>
 
-<app-update-employeeRoles-modal
-    *ngIf="showUpdateEmployeeRolesModal"
-    [employeeRoles]="selectedEmployeeRoles"
-    (closeModal)="showUpdateEmployeeRolesModal = false"
-    (updateItem)="handleUpdateEmployeeRoles($event)">
-</app-update-employeeRoles-modal>
+<app-employeeRoles-modal *ngIf="showViewDetailsEmployessRolesModal"
+    [employeeRoles]="selectedEmployeeRolesList" [employeeName]="selectedEmployeeName"
+    (closeModal)="showViewDetailsEmployessRolesModal = false">
+</app-employeeRoles-modal>
