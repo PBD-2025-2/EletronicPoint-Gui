@@ -1,0 +1,198 @@
+@use "../../../styles/variables" as *;
+@use 'sass:color';
+
+
+.find-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+
+    .filters {
+        display: flex;
+        gap: 5px;
+        flex: 1;
+        min-width: 0;
+
+        mat-label {
+            font-size: 12px;
+        }
+
+        button {
+            background-color: $delete-btn-color;
+            border-color: $delete-btn-color;
+            border-radius: 8px;
+            color: white;
+            width:130px;
+            height: 55px;
+            font-size: 16px;
+
+            &:hover:not(:disabled) {
+                background-color: white; 
+                font-weight: bold;
+                border: 2px solid $delete-btn-color;
+                color: $delete-btn-color;
+            }
+        }
+
+        .select-rosterType {
+            width:135px;
+        }
+        
+        .select-status {
+            width:170px;
+        }
+    }
+
+    button {
+        background-color: $primary-color;
+        padding: 14px;
+        border-radius: 8px;
+        cursor: pointer;
+
+        &:hover:not(:disabled) {
+            background-color: color.adjust(white);
+            font-weight: bold;
+            border: 2px solid $primary-color;
+            color: $primary-color;
+            font-weight: bold
+        }
+
+        &.add-roster-btn {
+            background-color: $primary-color;
+            margin-bottom: 22px;
+            width: 150px;
+            margin-left: auto;
+            color: white;
+            font-size: 16px;
+        }
+    }
+}
+
+.roster-section {
+    margin-top: 8px;
+    margin-top: 10px;
+
+    .roles-table {
+        width: 100%;
+        border-spacing: 0;
+        border-collapse: separate;
+        background-clip: padding-box;
+    }
+
+    .table-wrapper {
+        margin-top: -10px;
+        max-height: 580px;
+        overflow-y: auto;
+    }
+
+    .table-inner {
+        border: 1px solid $primary-color;
+    }
+
+    .mat-mdc-row .mat-mdc-cell {
+        border-bottom: 1px solid $primary-color;
+        cursor: pointer;
+    }
+
+    .mat-mdc-row:hover {
+        background-color: rgba($secondary-color, 0.3);
+        cursor: pointer;
+    }
+
+    .mat-mdc-header-row th {
+        color: white;
+        font-size: 16px;
+        background: $primary-color;
+    }
+
+    .mat-mdc-header-cell th {
+        color: white;
+        font-size: 16px;
+        background: $primary-color;
+    }
+
+    .roster-actions {
+        gap: 5px;
+        display: flex;
+    }
+
+    .mat-column-id {
+        width: 25px;
+        text-align: center;
+        padding-right: 24px;
+        border-right: 1px solid $primary-color;
+    }
+
+    .mat-column-name {
+        text-align: center;
+        padding-right: 24px;
+        border-right: 1px solid $primary-color;
+    }
+
+    .mat-column-type {
+        width: 25px;
+        text-align: center;
+        padding-right: 24px;
+        border-right: 1px solid $primary-color;
+    }
+
+    .mat-column-weeklyWorkload {
+        width: 25px;
+        text-align: center;
+        border-right: 1px solid $primary-color;
+    }
+
+    .mat-column-actions {
+        width: 10px;
+        text-align: center;
+    }
+
+    .mat-mdc-row:last-child .mat-mdc-cell {
+        border-bottom: none;
+    }
+
+    .mat-mdc-form-field {
+        width: 50%;
+        font-size: 12px;
+    }
+
+    label {
+        font-size: 16px;
+        padding: 4px;
+    }
+
+    button {
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+
+        padding: 0;
+        width: 36px;
+        height: 36px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        box-sizing: border-box;
+        transition: opacity 0.15s ease;
+        outline: none;
+
+        &:hover {
+            opacity: 0.5;
+        }
+
+        &.schedules-role-btn {
+            background-color: $schedules-btn-color;
+        }
+        
+        &.update-role-btn {
+            background-color: $update-btn-color;
+        }
+
+        &.delete-role-btn {
+            background-color: $delete-btn-color;
+        }
+    }
+}
