@@ -1,10 +1,29 @@
 @use 'ngx-toastr/toastr';
+@use '@angular/material' as mat;
 
+html {
+  @include mat.theme((
+    color: (
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+}
+
+body {
+  color-scheme: light;
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+
+  margin: 0;
+}
 
 * {
-    //global styles
-    margin: 0; //remove from all
-    padding: 0; //remove from all
+    margin: 0; 
+    padding: 0; 
     box-sizing: border-box;
     font-family: "Fredoka", sans-serif;
 }
@@ -13,7 +32,6 @@ html, body {
     height: 100%;
 }
 
-/* styles.scss ou um global.scss */
 .custom-toast {
   animation: slideFadeIn 0.4s ease forwards;
 }
@@ -28,3 +46,6 @@ html, body {
     opacity: 1;
   }
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

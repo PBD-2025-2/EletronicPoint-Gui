@@ -5,7 +5,7 @@ import { RoleComponent } from './pages/role/role';
 import { EmployeeComponent } from './pages/employee/employee';
 import { DefaultMenuLayout } from './components/default-menu-layout/default-menu-layout';
 import { CompanyComponent } from './pages/company/company';
-import { RegisterRoster } from './components/register-roster/register-roster';
+import { RosterComponent } from './pages/roster/roster';
 import { EletronicPoints } from './pages/eletronic-points/eletronic-points';
 
 export const routes: Routes = [
@@ -21,7 +21,7 @@ export const routes: Routes = [
         { path: 'company', component: CompanyComponent },
         { path: 'roles', component: RoleComponent },
         { path: 'employee', component: EmployeeComponent },
-        { path: 'roster', component: RegisterRoster },
+        { path: 'roster', component: RosterComponent },
         { path: 'eletronicPoint', component: EletronicPoints },
         { path: '', redirectTo: 'company', pathMatch: 'full' },
         ]
