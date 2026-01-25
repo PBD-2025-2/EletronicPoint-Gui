@@ -18,10 +18,10 @@ export class AddSectorModalComponent {
     @Input() secondKey = 'document';
 
     @Output() closeModal = new EventEmitter<void>();
-    @Output() saveItem = new EventEmitter<{ name: string; [key: string]: string }>();
+    @Output() saveItem = new EventEmitter<{ name: string; cnpj: string }>();
 
     name = '';
-    secondValue = '';
+    cnpj = '';
 
     close() {
       this.closeModal.emit();
@@ -30,7 +30,7 @@ export class AddSectorModalComponent {
     save() {
       this.saveItem.emit({
         name: this.name,
-        [this.secondKey]: this.secondValue   //dynamic key
+        cnpj: this.cnpj
       });
     }
 

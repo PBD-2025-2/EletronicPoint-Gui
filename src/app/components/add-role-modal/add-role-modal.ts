@@ -2,12 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
-export interface AddRoleEvent {
-  name: string;
-  companyName: string;
-  sectorName: string;
-}
-
 @Component({
   selector: 'app-add-role-modal',
   imports: [CommonModule, FormsModule],
@@ -22,7 +16,7 @@ export class AddRoleModalComponent {
   @Output() saveItem = new EventEmitter<any>();
 
   name = '';
-  companyName = '';
+  cnpj = '';
   sectorName = '';
 
   saving = false;
@@ -34,7 +28,7 @@ export class AddRoleModalComponent {
   saveAddRole() {
     this.saveItem.emit({
       name: this.name.trim(),
-      companyName: this.companyName.trim(),
+      cnpj: this.cnpj.trim(),
       sectorName: this.sectorName.trim(),
     });
   }
