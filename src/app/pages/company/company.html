@@ -1,107 +1,83 @@
 <section class="find-section">
-    <div class="search-container">
-        <input
-            type="text" 
-            (input)="searchTerm = $event.target.value"
-            class="input-search-company" 
-            placeholder="Enter an ID, a name or a CNPJ" 
-        />
-        <button 
-            class="search-btn" 
-            (click)="searchCompanies()">Search
-        </button>
+    <div class="filters">
+        <mat-form-field appearance="outline">
+            <mat-label>Filter by Id</mat-label>
+            <input matInput (keyup)="filterById($event)" placeholder="Ex. 123" #input />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Filter by CompanyName</mat-label>
+            <input matInput (keyup)="filterByCompanyName($event)" placeholder="Ex. ShopTechCompany" #input />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Filter by CNPJ</mat-label>
+            <input matInput (keyup)="filterByCnpj($event)" placeholder="12345678912345" #input />
+        </mat-form-field>
+
+        <button class="reset-filters-btn" (click)="resetFilters()">Reset Filters</button>
     </div>
-    <button 
-        class="add-company-btn"
-        (click)="openAddCompanyModal('company')">Add Company
-    </button>
-    <button 
-        class="add-sector-btn"
-        (click)="openAddSectorModal('sector')">Add sector
-    </button>
+
+    <button class="add-company-btn" (click)="openAddCompanyModal('company')">Add Company</button>
+    <button class="add-sector-btn" (click)="openAddSectorModal('sector')">Add sector</button>
 </section>
 
 <section class="companies-section">
-    <div class="company-list">
-        <div class="company-item" *ngFor="let company of paginatedCompanies">
-            <div class="company-info">
-                {{ company.name }}
-            </div>
-            <div class="company-actions">
-                <button 
-                    class="update-company-btn"
-                    (click)="openUpdateCompanyModal('company', company)">
-                    <img src="assets/update-btn.svg" class="btn-icon">
-                </button>
+    <div class="table-wrapper">
+        <div class="table-inner">
+            <table mat-table [dataSource]="dataSource" class="companies-table">
+                <ng-container matColumnDef="id">
+                    <th mat-header-cell *matHeaderCellDef>ID</th>
+                    <td mat-cell *matCellDef="let company">{{ company.id }}</td>
+                </ng-container>
 
-                <button 
-                    class="delete-company-btn"
-                    (click)="openDeleteCompanyModal('company', company)">
-                    <img src="assets/delete-btn.svg" class="btn-icon">
-                </button>
-            </div>
+                <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef>Name</th>
+                    <td mat-cell *matCellDef="let company">{{ company.name }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef>Actions</th>
+                    <td mat-cell *matCellDef="let company">
+                        <div class="company-actions">
+                            <button class="update-company-btn" (click)="openUpdateCompanyModal('company', company)">
+                                <img src="assets/update-btn.svg" class="btn-icon" />
+                            </button>
+
+                            <button class="delete-company-btn" (click)="openDeleteCompanyModal('company', company)">
+                                <img src="assets/delete-btn.svg" class="btn-icon" />
+                            </button>
+                        </div>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+                <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell" colspan="4">No data matching the filter.</td>
+                </tr>
+            </table>
         </div>
     </div>
+
+    <mat-paginator [pageSize]="10" [pageSizeOptions]="[10, 50, 100]" showFirstLastButtons>
+    </mat-paginator>
 </section>
 
-<div class="pagination-controls" *ngIf="totalPages > 1">
-    <button 
-        (click)="changePage(currentPage - 1)" 
-        [disabled]="currentPage === 1"
-        class="pagination-btn">
-        &laquo; Previous
-    </button>
-
-    <ng-container *ngFor="let pageNum of getPagesArray()">
-        <button
-            (click)="changePage(pageNum)"
-            [class.active-page]="currentPage === pageNum"
-            class="page-number-btn">
-            {{ pageNum }}
-        </button>
-    </ng-container>
-    <span class="page-status"> Page {{ currentPage }}/{{ totalPages }} </span>
-    
-    <button 
-        (click)="changePage(currentPage + 1)" 
-        [disabled]="currentPage === totalPages"
-        class="pagination-btn">
-        Next &raquo;
-    </button>
-</div>
-
-<app-add-company-modal
-    *ngIf="showAddCompanyModal"
-    [title]="modalTitle"
-    [secondLabel]="secondLabel"
-    [secondPlaceholder]="secondPlaceholder"
-    [secondKey]="secondKey"
-    (closeModal)="showAddCompanyModal = false"
-    (saveItem)="handleSaveCompany($event)">
+<app-add-company-modal *ngIf="showAddCompanyModal" [title]="modalTitle" [secondLabel]="secondLabel"
+    [secondPlaceholder]="secondPlaceholder" [secondKey]="secondKey" (closeModal)="showAddCompanyModal = false"
+    (saveItem)="handleAddCompany($event)">
 </app-add-company-modal>
-    
-<app-add-sector-modal
-    *ngIf="showAddSectorModal"
-    [title]="modalTitle"
-    [secondLabel]="secondLabel"
-    [secondPlaceholder]="secondPlaceholder"
-    [secondKey]="secondKey"
-    (closeModal)="showAddSectorModal = false"
-    (saveItem)="handleSaveCompany($event)">
+
+<app-add-sector-modal *ngIf="showAddSectorModal" [title]="modalTitle" [secondLabel]="secondLabel"
+    [secondPlaceholder]="secondPlaceholder" [secondKey]="secondKey" (closeModal)="showAddSectorModal = false"
+    (saveItem)="handleAddSector($event)">
 </app-add-sector-modal>
 
-<app-update-company-modal
-    *ngIf="showUpdateCompanyModal"
-    [title]="modalTitle"
-    [company]="selectedCompany"
-    (closeModal)="showUpdateCompanyModal = false"
-    (updateItem)="handleUpdateCompany($event)">
+<app-update-company-modal *ngIf="showUpdateCompanyModal" [title]="modalTitle" [company]="selectedCompany"
+    (closeModal)="showUpdateCompanyModal = false" (updateItem)="handleUpdateCompany($event)">
 </app-update-company-modal>
 
-<app-delete-company-modal
-    *ngIf="showDeleteCompanyModal"
-    [title]="modalTitle"
-    [company]="selectedCompany"
-    (closeModal)="showDeleteCompanyModal = false"
-    (deleteItem)="handleDeleteCompany($event)">
+<app-delete-company-modal *ngIf="showDeleteCompanyModal" [title]="modalTitle" [company]="selectedCompany"
+    (closeModal)="showDeleteCompanyModal = false" (deleteItem)="handleDeleteCompany($event)">
 </app-delete-company-modal>

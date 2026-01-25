@@ -7,7 +7,12 @@ import { environment } from '../environments/environment';
 export interface Company {
   id: number;
   name: string;
-  cnpj?: string;
+  cnpj: string;
+}
+
+export interface CompanyPostRequest {
+  name: string;
+  cnpj: string;
 }
 
 export interface Sector {
@@ -52,34 +57,29 @@ export class CompanyService {
       catchError(err => throwError(() => err)));
   }
 
-  getCompanyByName(name: string): Observable<Company> {
+  getCompanyByName(name: string): Observable<Company[]> {
     if (!name) {
       return throwError(() => new Error('Company name is required'));
     }
 
-    const encoded = encodeURIComponent(name.trim());
-
-    return this.http.get<any>(`${this.apiUrl}/name/${encoded}`).pipe(
-      map(res => {
-        if (!res) throw new Error("Company not found");
-
-        const arr = Array.isArray(res) ? res : [res];
-
-        if (arr.length === 0) {
-          throw new Error("Company not found");
-        }
-
-        const company = arr[0];
-        if (!company.id) {
-          throw new Error("Company record doesn't have id");
-        }
-        return company as Company;
-      }),
-      catchError(err => throwError(() => err))
-    );
+    const encodedName = encodeURIComponent(name.trim());
+    return this.http.get<any>(`${this.apiUrl}/name/${encodedName}`);
   }
 
-  addCompany(company: Omit<Company, 'id'>): Observable<Company> {
+  getCompanyByCNPJ(cnpj: string): Observable<Company[]> {
+    if (!cnpj) {
+      return throwError(() => new Error('Company cnpj is required'));
+    }
+
+    if (cnpj.length != 14 ) {
+      return throwError(() => new Error('CNPJ must have 14 digits.'));
+    }
+
+    const encodedCNPJ = encodeURIComponent(cnpj.trim());
+    return this.http.get<Company[]>(`${this.apiUrl}/cnpj/${encodedCNPJ}`);
+  }
+
+  addCompany(company: CompanyPostRequest): Observable<Company> {
     return this.http.post<Company>(this.apiUrl, company);
   }
 
