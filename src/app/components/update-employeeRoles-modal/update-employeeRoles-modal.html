@@ -4,25 +4,45 @@
     <form class="form-section">
       <label>
         Roster Name:
-        <input
-          placeholder="Roster Name"
-          type="text"
-          [(ngModel)]="rosterName"
-          name="rosterName"
-          required
-        />
       </label>
+
+      <div class="roster-form">
+          <input matInput
+                class="rosterName-input" 
+                type="text"
+                placeholder="Search for a Roster"
+                [formControl]="rosterControl"
+                [matAutocomplete]="rosterAuto"
+          >
+  
+          <mat-autocomplete #rosterAuto="matAutocomplete" [displayWith]="displayRoster">
+  
+            @for (roster of filteredRosters | async; track roster.id) {
+              <mat-option [value]="roster">{{roster.name}}</mat-option>
+            }
+          </mat-autocomplete>
+      </div>
       
       <label>
         Role Name:
-        <input
-          placeholder="Role Name"
-          type="text"
-          [(ngModel)]="roleName"
-          name="roleName"
-          required
-        />
       </label>
+      
+      <div class="role-form">
+          <input matInput
+                class="roleName-input" 
+                type="text"
+                placeholder="Search for a role"
+                [formControl]="roleControl"
+                [matAutocomplete]="roleAuto"
+          >
+  
+          <mat-autocomplete #roleAuto="matAutocomplete" [displayWith]="displayRole">
+  
+            @for (role of filteredRoles | async; track role.id) {
+              <mat-option [value]="role">{{role.name}}</mat-option>
+            }
+          </mat-autocomplete>
+      </div>
 
       <label>
         Role Status: 
@@ -40,7 +60,7 @@
 
       <div class="actions">
         <button type="button" class="btn-cancel" (click)="close()">CANCEL</button>
-        <button type="button" class="btn-update" (click)="update()">UPDATE</button>
+        <button type="button" class="btn-update" [disabled]="!isFormValid()" (click)="update()">UPDATE</button>
       </div>
     </form>
   </div>
