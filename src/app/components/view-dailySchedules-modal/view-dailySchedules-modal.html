@@ -1,0 +1,47 @@
+<div class="modal-overlay" (click)="close()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>Schedules Details:</h2>
+
+    <div class="table-wrapper">
+      <div class="table-inner">
+          <table mat-table [dataSource]="dataSource" class="dailySchedules-table">
+              <ng-container matColumnDef="day">
+                  <th mat-header-cell *matHeaderCellDef>Day</th>
+                  <td mat-cell *matCellDef="let dailyScheduleTableModal"> {{ dailyScheduleTableModal.day }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="entry1">
+                  <th mat-header-cell *matHeaderCellDef>Entry 1</th>
+                  <td mat-cell *matCellDef="let dailyScheduleTableModal">{{ dailyScheduleTableModal.entry_1 }}</td>
+              </ng-container>
+              
+              <ng-container matColumnDef="exit1">
+                  <th mat-header-cell *matHeaderCellDef>Exit 1</th>
+                  <td mat-cell *matCellDef="let dailyScheduleTableModal">{{ dailyScheduleTableModal.exit_1 }}</td>
+              </ng-container>
+              
+              <ng-container matColumnDef="entry2">
+                  <th mat-header-cell *matHeaderCellDef>Entry 2</th>
+                  <td mat-cell *matCellDef="let dailyScheduleTableModal">{{ dailyScheduleTableModal.entry_2 }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="exit2">
+                  <th mat-header-cell *matHeaderCellDef>Entry 1</th>
+                  <td mat-cell *matCellDef="let dailyScheduleTableModal">{{ dailyScheduleTableModal.exit_2 }}</td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+              <tr class="mat-row" *matNoDataRow>
+                  <td class="mat-cell" colspan="4">No data matching the filter.</td>
+              </tr>
+          </table>
+      </div>
+    </div>
+
+    <!-- <div class="actions">
+      <button class="close-btn" type="button" (click)="close()">Cancel</button>
+    </div> -->
+  </div>  
+</div>    
+

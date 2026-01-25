@@ -1,0 +1,45 @@
+@use '../../../styles/variables' as *;
+
+.modal-overlay {
+  position: fixed; 
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;    
+  z-index: 1000; 
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+
+  
+  h2 {
+    margin-top: 0;
+    color: $primary-color;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 15px;
+  }
+
+  .actions {
+    display: flex;
+    justify-content: flex-end; 
+    margin-top: -5px;
+
+    button {
+      background-color: $primary-color;
+      padding: 6px;
+      border-radius: 8px;
+      color: white;
+    }
+  }
+}

@@ -1,0 +1,16 @@
+<div class="modal-overlay" (click)="close()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>Schedules Details:</h2>
+
+    <label>
+      <Strong>Start Time:</Strong> {{this.selectedRoster.schedules.startTime}}h | 
+      <Strong>Work Duration:</Strong> {{this.selectedRoster.schedules.workDuration}}h | 
+      <Strong>Time Off:</Strong> {{this.selectedRoster.schedules.timeOff}}h
+    </label>
+
+    <div class="actions">
+      <button class="close-btn" type="button" (click)="close()">Cancel</button>
+    </div>
+  </div>  
+</div>    
+
