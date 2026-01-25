@@ -1,0 +1,145 @@
+<div class="modal-overlay" (click)="close()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <h2>{{ modalTitle}}: <strong>{{employeeName}}</strong></h2>
+
+        <div class="filters">
+            <mat-form-field appearance="outline">
+                <mat-label>Filter by Id</mat-label>
+                <input matInput (keyup)="filterById($event)" placeholder="Ex. 123" #input />
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline">
+                <mat-label>Filter by RosterName</mat-label>
+                <input matInput (keyup)="filterByRosterName($event)" placeholder="Ex. ABDCDEFG" #input />
+            </mat-form-field>
+            
+            
+            <mat-form-field appearance="outline">
+                <mat-label>Filter by RoleName</mat-label>
+                <input matInput (keyup)="filterByRoleName($event)" placeholder="Ex. ABDCDEFG" #input />
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline">
+                <mat-label>Filter by SectorName</mat-label>
+                <input matInput (keyup)="filterBySectorName($event)" placeholder="Ex. ABDCDEFG" #input />
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline">
+                <mat-label>Filter by CompanyName</mat-label>
+                <input matInput (keyup)="filterByCompanyName($event)" placeholder="Ex. ABDCDEFG" #input />
+            </mat-form-field>
+            
+            <mat-form-field class="select-rosterType" appearance="outline">
+                <mat-label>Filter by RosterType</mat-label>
+                    <mat-select [(value)]="selectedRosterType" (selectionChange)="filterByRosterType($event.value)">
+                    <mat-option value="">--</mat-option>
+                    <mat-option value="Diaria">Diária</mat-option>
+                    <mat-option value="Plantão">Plantão</mat-option>
+                </mat-select>
+            </mat-form-field>
+            
+            <mat-form-field class="select-status" appearance="outline">
+                <mat-label>Filter by Status</mat-label>
+                    <mat-select [(value)]="selectedStatus" (selectionChange)="filterByStatus($event.value)">
+                    <mat-option value="">--</mat-option>
+                    <mat-option value="true">Ativo</mat-option>
+                    <mat-option value="false">Desativado</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <button class="reset-filters-btn" (click)="resetFilters()">Reset Filters</button>
+        </div>
+
+        <section class="employeeRoles-section">
+            <div class="table-wrapper">
+                <div class="table-inner">
+                    <table mat-table [dataSource]="dataSource" class="employeeRoles-table">
+                        <ng-container matColumnDef="id">
+                            <th mat-header-cell *matHeaderCellDef>ID</th>
+                            <td mat-cell *matCellDef="let employeeRoles">{{ employeeRoles.id }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="rosterName">
+                            <th mat-header-cell *matHeaderCellDef>Roster Name</th>
+                            <td mat-cell *matCellDef="let employeeRoles">{{ employeeRoles.roster.name }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="rosterType">
+                            <th mat-header-cell *matHeaderCellDef>Roster Type</th>
+                            <td mat-cell *matCellDef="let employeeRoles">{{employeeRoles.roster.type}}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="weeklyWorkload">
+                            <th mat-header-cell *matHeaderCellDef>WeeklyWorkload (Hours)</th>
+                            <td mat-cell *matCellDef="let employeeRoles">{{employeeRoles.roster.weeklyWorkload}}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="role">
+                            <th mat-header-cell *matHeaderCellDef>Role</th>
+                            <td mat-cell *matCellDef="let employeeRoles">{{employeeRoles.role.name}}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="sector">
+                            <th mat-header-cell *matHeaderCellDef>Sector</th>
+                            <td mat-cell *matCellDef="let employeeRoles">{{employeeRoles.role.sectors.name}}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="company">
+                            <th mat-header-cell *matHeaderCellDef>Company</th>
+                            <td mat-cell *matCellDef="let employeeRoles">{{employeeRoles.role.sectors.company.name}}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="status">
+                            <th mat-header-cell *matHeaderCellDef>Status</th>
+                            <td mat-cell *matCellDef="let employeeRoles">{{parseStatusBooleanToString(employeeRoles.status)}}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="actions">
+                            <th mat-header-cell *matHeaderCellDef>Actions</th>
+                            <td mat-cell *matCellDef="let employeeRoles">
+                                <div class="employeeRoles-actions" (click)="$event.stopPropagation()">
+                                    <button type="button" class="update-employeeRoles-btn"
+                                        (click)="openUpdateEmployeeRolesModal(employeeRoles);">
+                                        <img src="assets/update-btn.svg" class="btn-icon">
+                                    </button>
+
+                                    <button type="button" class="delete-employeeRoles-btn"
+                                        (click)="openDeleteEmployeeRolesModal(employeeRoles)">
+                                        <img src="assets/delete-btn.svg" class="btn-icon">
+                                    </button>
+
+                                </div>
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+                        <tr class="mat-row" *matNoDataRow>
+                            <td class="mat-cell" colspan="4">No data matching the filter.</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <mat-paginator 
+                [pageSize]="10" 
+                [pageSizeOptions]="[10,50,100]" 
+                showFirstLastButtons>
+            </mat-paginator>
+        </section>
+    </div>
+</div>
+
+<app-update-employeeRoles-modal 
+    *ngIf="showUpdateEmployeeRolesModal" 
+    [employeeRoles]="selectedEmployeeRoles"
+    (updateItem)="handleUpdateEmployeeRoles($event)"
+    (closeModal)="showUpdateEmployeeRolesModal = false" >
+</app-update-employeeRoles-modal>
+
+<app-delete-employeeRoles-modal 
+    *ngIf="showDeleteEmployeeRolesModal" 
+    [employeeRoles]="selectedEmployeeRoles"
+    (deleteItem)="handleDeleteEmployeeRoles($event)"
+    (closeModal)="showDeleteEmployeeRolesModal = false" >
+</app-delete-employeeRoles-modal>

@@ -1,0 +1,209 @@
+@use '../../../styles/variables' as *;
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); //60% opacity: ;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px 30px;
+    border-radius: 8px;
+    width: 1300px;
+
+    h2 {
+        margin-left: 8px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 15px;
+    }
+
+    .filters {
+        display: flex;
+        gap: 5px;
+        width: 1222px;
+        flex: 1;
+        min-width: 0;
+        margin-left: 10px;
+
+        mat-label {
+            font-size: 12px;
+        }
+
+        button {
+            background-color: $delete-btn-color;
+            border-color: $delete-btn-color;
+            border-radius: 8px;
+            color: white;
+            width:130px;
+            height: 55px;
+            font-size: 16px;
+
+            &:hover:not(:disabled) {
+                background-color: white; 
+                font-weight: bold;
+                border: 2px solid $delete-btn-color;
+                color: $delete-btn-color;
+            }
+        }
+
+        .select-rosterType {
+            width:135px;
+        }
+        
+        .select-status {
+            width:170px;
+        }
+    }
+
+    .employeeRoles-section {
+        padding: 8px;
+        margin-top: -10px;
+
+        .employeeRoles-table {
+            width: 100%;
+            border-spacing: 0;
+            border-collapse: separate;
+            background-clip: padding-box;
+        }
+
+        .table-wrapper {
+            max-height: 480px;
+            overflow-y: auto;
+        }
+
+        .table-inner {
+            border: 1px solid $primary-color;
+        }
+
+        .mat-mdc-row .mat-mdc-cell {
+            border-bottom: 1px solid $primary-color;
+            cursor: pointer;
+        }   
+
+        .mat-mdc-row:hover {
+            background-color: rgba($secondary-color, 0.3);
+            cursor: pointer;
+        }
+
+        .mat-mdc-header-row th {
+            color: white;
+            font-size: 15px;
+            background: $primary-color;
+        }
+        
+        .mat-mdc-header-cell th {
+            color: white;
+            font-size: 16px;
+            background: $primary-color;
+        }
+
+        .employeeRoles-actions {
+            gap: 5px;
+            display: flex;
+        }
+
+        .mat-column-id {
+            width: 25px;
+            text-align: center;
+            padding-right: 24px;
+            border-right: 1px solid $primary-color;
+        }
+        
+        .mat-column-rosterName {
+            text-align: center;
+            padding-right: 24px;
+            border-right: 1px solid $primary-color;
+        }
+        
+        .mat-column-rosterType {
+            text-align: center;
+            padding-right: 24px;
+            border-right: 1px solid $primary-color;
+        } 
+        
+        .mat-column-weeklyWorkload {
+            text-align: center;
+            padding-right: 24px;
+            border-right: 1px solid $primary-color;
+        }
+        
+        .mat-column-role {
+            text-align: center;
+            padding-right: 24px;
+            border-right: 1px solid $primary-color;
+        } 
+
+        .mat-column-sector {
+            text-align: center;
+            padding-right: 24px;
+            border-right: 1px solid $primary-color;
+        } 
+
+        .mat-column-company {
+            text-align: center;
+            border-right: 1px solid $primary-color;
+        } 
+
+        .mat-column-status {
+            text-align: center;
+            padding-right: 24px;
+            border-right: 1px solid $primary-color;
+        }
+
+        .mat-column-actions {
+            width: 10px;
+            text-align: center;
+        }
+
+        .mat-mdc-row:last-child .mat-mdc-cell {
+            border-bottom: none;
+        }
+
+        .mat-mdc-form-field {
+            width: 50%;
+            font-size: 12px;
+            
+        }
+        
+        button {
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+
+            padding: 0;
+            width: 36px;
+            height: 36px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            box-sizing: border-box;
+            transition: opacity 0.15s ease;
+            outline: none;
+
+            &:hover {
+                opacity: 0.5;
+            }
+            
+            &.update-employeeRoles-btn {
+                background-color: $update-btn-color;
+            }
+
+            &.delete-employeeRoles-btn {
+                background-color: $delete-btn-color;
+            }    
+        }
+    }
+}
