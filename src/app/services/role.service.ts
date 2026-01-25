@@ -6,7 +6,7 @@ import { environment } from '../environments/environment';
 import { Company } from './company.service';
 
 export interface AttachRoleData {
-  status?: string;
+  status?: boolean;
   idRoster: number;
   employeeId: number;
   roleId: number;
@@ -102,6 +102,10 @@ export class RoleService {
       .pipe( catchError(err => throwError(() => err)));
   }
 
+  searchRolesByCompanyId(companyId: number): Observable<Role[]> {
+    return this.http.get<Role[]>(`${this.apiRolesUrl}/companyId/${companyId}`);
+  }
+
   searchRoleById(roleId: string): Observable<Role[]> {
     const encoded = encodeURIComponent(roleId);
     return this.http.get<Role[]>(`${this.apiRolesUrl}/id/${encoded}`)
@@ -123,10 +127,9 @@ export class RoleService {
       return this.http.delete<Role>(`${this.apiRolesUrl}/${id}`);
   }
 
-  getSectorByNameAndCompany(sectorName: string,companyId: number): Observable<any> {
-
+  getSectorByNameAndCompany(sectorName: string, companyId: number): Observable<any> {
     if (!sectorName || !companyId) {
-      return throwError(() => new Error('Sector name ou companyId inválido'));
+      return throwError(() => new Error('Sector name ou Company inválido'));
     }
 
     const encName = encodeURIComponent(sectorName.trim());

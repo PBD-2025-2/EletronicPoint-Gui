@@ -1,117 +1,103 @@
 <section class="find-section">
-    <div class="search-container">
-        <input
-            type="text" 
-            (input)="searchTerm1 = $event.target.value"
-            class="input-search-role1" 
-            placeholder="Enter an ID or a role name"
-        />
-        <input
-            type="text" 
-            (input)="searchTerm2 = $event.target.value"
-            class="input-search-role2" 
-            placeholder="Or the company's CNPJ" 
-        />
-        <button 
-        class="search-btn"
-        (click)="searchRoles()"> Search</button>
+    <div class="filters">
+        <mat-form-field appearance="outline">
+            <mat-label>Filter by Id</mat-label>
+            <input matInput (keyup)="filterById($event)" placeholder="Ex. 123" #input />
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+            <mat-label>Filter by RoleName</mat-label>
+            <input matInput (keyup)="filterByRoleName($event)" placeholder="Ex. ABDCDEFG" #input />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Filter by SectorName</mat-label>
+            <input matInput (keyup)="filterBySectorName($event)" placeholder="Ex. ABDCDEFG" #input />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Filter by CompanyName</mat-label>
+            <input matInput (keyup)="filterByCompanyName($event)" placeholder="Ex. ABDCDEFG" #input />
+        </mat-form-field>
+
+        <button class="reset-filters-btn" (click)="resetFilters()">Reset Filters</button>
     </div>
-    <button class="add-role-btn" (click)="openAddRoleModal()">Add </button>
-    <button class="attach-role-employee-btn" (click)="openAttachRoleToEmployeeModal()" >Attach role to employee </button>
+
+    <div class="actions">
+        <button class="add-role-btn" (click)="openAddRoleModal()">Add Role</button>
+        <button class="attach-role-employee-btn" (click)="openAttachRoleToEmployeeModal()">Attach role to employee </button>   
+    </div>
 </section>
 
 <section class="roles-section">
-  <div class="role-list">
-    <label><h5><strong>Companies</strong></h5></label>
 
-    <div class="company-item" *ngFor="let group of groupedRoles">
+    <div class="table-wrapper">
+        <div class="table-inner">
+            <table mat-table [dataSource]="dataSource" class="roles-table">
 
-        <div class="company-header" (click)="group.expanded = !group.expanded"> 
-          <span class="company-name">
-            {{ group.companyName }}
-          </span>
+                <ng-container matColumnDef="id">
+                    <th mat-header-cell *matHeaderCellDef> ID </th>
+                    <td mat-cell *matCellDef="let role"> {{role.id}} </td>
+                </ng-container>
 
-          <span class="toggle-icon" [class.open]="group.expanded">▶</span>
-        </div>
+                <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef> Name </th>
+                    <td mat-cell *matCellDef="let role"> {{role.name}} </td>
+                </ng-container>
 
-        <div class="role-sublist" [class.expanded]="group.expanded">
-          <h5><i>Role Details:</i></h5>
-            <div class="role-item" *ngFor="let role of group.roles"> 
+                <ng-container matColumnDef="sector">
+                    <th mat-header-cell *matHeaderCellDef> Sector </th>
+                    <td mat-cell *matCellDef="let role"> {{role.sectors.name}} </td>
+                </ng-container>
 
-              <div class= "role-info">
-                <div><strong>Sector: </strong> {{role.sectors.name}} | <strong>Role: </strong>{{ role.name }}</div>
-              </div>
-              
-              <button
-                type="button"
-                class="update-role-btn"
-                (click)="openUpdateRoleModal(role); $event.stopPropagation()">
-                <img src="assets/update-btn.svg" class="btn-icon">
-              </button>
-              <button
-                type="button"
-                class="delete-role-btn"
-                (click)="openDeleteRoleModal(role); $event.stopPropagation()">
-                <img src="assets/delete-btn.svg" class="btn-icon">
-              </button>
+                <ng-container matColumnDef="company">
+                    <th mat-header-cell *matHeaderCellDef> Company </th>
+                    <td mat-cell *matCellDef="let role"> {{role.sectors.company.name}} </td>
+                </ng-container>
 
-            </div>
+                <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef> Actions </th>
+                    <td mat-cell *matCellDef="let role">
+                        <div class="company-actions">
+                            <button type="button" class="update-role-btn"
+                                (click)="openUpdateRoleModal(role); $event.stopPropagation()">
+                                <img src="assets/update-btn.svg" class="btn-icon">
+                            </button>
+                            <button type="button" class="delete-role-btn"
+                                (click)="openDeleteRoleModal(role); $event.stopPropagation()">
+                                <img src="assets/delete-btn.svg" class="btn-icon">
+                            </button>
+                        </div>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell" colspan="4">No data matching the filter.</td>
+                </tr>
+            </table>
         </div>
     </div>
-  </div>
+
+    <mat-paginator 
+        [pageSize]="10" 
+        [pageSizeOptions]="[10,50,100]" 
+        showFirstLastButtons>
+    </mat-paginator>
 </section>
 
-<div class="pagination-controls" *ngIf="totalItems > pageSize">
-  
-  <button 
-    (click)="previousPage()" 
-    [disabled]="currentPage === 1"
-    class="pagination-btn">
-    &laquo; Previous
-  </button>
-
-  <ng-container *ngFor="let pageNum of [].constructor(totalPages); let i = index">
-    <button
-      (click)="goToPage(i + 1)"
-      [class.active-page]="currentPage === i + 1"
-      class="page-number-btn">
-      {{ i + 1 }}
-    </button>
-  </ng-container>
-
-  <span class="page-status">
-    Page {{ currentPage }}/{{ totalPages }}
-  </span>
-
-  <button 
-    (click)="nextPage()" 
-    [disabled]="currentPage === totalPages || totalPages === 0"
-    class="pagination-btn">
-    Next &raquo;
-  </button>
-</div>
-
-<app-add-role-modal
-  *ngIf="showAddRoleModal"
-  (saveItem)="handleAddRole($event)"
-  (closeModal)="showAddRoleModal = false">
+<app-add-role-modal *ngIf="showAddRoleModal" (saveItem)="handleAddRole($event)" (closeModal)="showAddRoleModal = false">
 </app-add-role-modal>
 
-<app-update-role-modal
-    *ngIf="showUpdateRoleModal"
-    (closeModal)="showUpdateRoleModal = false"
+<app-update-role-modal *ngIf="showUpdateRoleModal" (closeModal)="showUpdateRoleModal = false"
     (updateItem)="handleUpdateRole($event)">
 </app-update-role-modal>
 
-<app-delete-role-modal
-    *ngIf="showDeleteRoleModal"
-    [role]="selectedRole"
-    (closeModal)="showDeleteRoleModal = false"
+<app-delete-role-modal *ngIf="showDeleteRoleModal" [role]="selectedRole" (closeModal)="showDeleteRoleModal = false"
     (deleteItem)="handleDeleteRole($event)">
 </app-delete-role-modal>
 
-<app-attach-role-to-employee
-  *ngIf="showAttachRoleToEmployeeModal"
-  title="Attach role to employee"
-  (closeModal)="showAttachRoleToEmployeeModal = false">
+<app-attach-role-to-employee *ngIf="showAttachRoleToEmployeeModal" title="Attach role to employee"
+    (saveItem)="handleAttachRoleToEmployee($event)" (closeModal)="showAttachRoleToEmployeeModal = false">
 </app-attach-role-to-employee>
