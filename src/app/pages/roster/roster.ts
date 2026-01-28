@@ -1,7 +1,7 @@
 import { Component, ElementRef, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NotificationService } from '../../services/notification.service';
-import { DailyRoster, Roster, RosterDuty, RosterService } from '../../services/roster.service';
+import { RosterDaily, Roster, RosterDuty, RosterService } from '../../services/roster.service';
 import { AddRosterModalComponent } from '../../components/add-roster-modal/add-roster-modal';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -10,11 +10,12 @@ import { MatInputModule } from '@angular/material/input';
 import { ViewDutySchedulesrModalComponent } from '../../components/view-dutySchedules-modal/view-dutySchedules-modal';
 import { ViewDailySchedulesrModalComponent } from '../../components/view-dailySchedules-modal/view-dailySchedules-modal';
 import { MatSelect, MatOption } from "@angular/material/select";
-
+import { UpdateRosterDutyModalComponent } from '../../components/update-roster-duty-modal/update-roster-duty-modal';
+import { UpdateRosterDailyModalComponent } from '../../components/update-roster-daily-modal/update-roster-daily-modal'; 
 @Component({
   selector: 'app-roster',
   standalone: true,
-  imports: [CommonModule, AddRosterModalComponent, MatTableModule, MatPaginatorModule, MatFormFieldModule, MatInputModule, ViewDutySchedulesrModalComponent, ViewDailySchedulesrModalComponent, MatSelect, MatOption],
+  imports: [CommonModule, AddRosterModalComponent, UpdateRosterDailyModalComponent, UpdateRosterDutyModalComponent, MatTableModule, MatPaginatorModule, MatFormFieldModule, MatInputModule, ViewDutySchedulesrModalComponent, ViewDailySchedulesrModalComponent, MatSelect, MatOption],
   templateUrl: './roster.html',
   styleUrl: './roster.scss'
 })
@@ -24,13 +25,15 @@ export class RosterComponent {
   searchTerm2 = '';
 
   showAddRosterModal = false;
+  showUpdateRosterDutyModal = false;
+  showUpdateRosterDailyModal = false;
   showViewDutySchedulesModal = false;
   showViewDailySchedulesModal = false;
 
   rosters: Roster[] = [];
   selectedRoster!: Roster;
   selectedRosterDuty!: RosterDuty;
-  selectedRosterDaily!: DailyRoster;
+  selectedRosterDaily!: RosterDaily;
   
 
   groupedRosters: {
@@ -125,32 +128,11 @@ export class RosterComponent {
       next: data => {
         this.rosters = data;
         this.dataSource.data = data
-
-        this.totalItems = this.rosters.length;
-        this.totalPages = Math.ceil(this.totalItems / this.pageSize);
-        this.paginateAndGroupRosters();
       },
       error: err => {
         this.notificationService.showError("Error while loading roles");
       }
     });
-  }
-
-  private groupRosters() {
-    const map = new Map<string, Roster[]>();
-
-    this.rosters.forEach(r => {
-      const name = r.name || 'N/A';
-
-      if (!map.has(name)) map.set(name, []);
-      map.get(name)!.push(r);
-    });
-
-    this.groupedRosters = Array.from(map.entries()).map(([rosterName, rosters]) => ({
-      rosterName,
-      rosters,
-      expanded: false
-    }));
   }
 
   searchRoster() {
@@ -163,30 +145,24 @@ export class RosterComponent {
 
     const handleSearchResponse = (res: Roster[]) => {
       this.rosters = res;
-      this.currentPage = 1;
-      this.totalItems = this.rosters.length;
-      this.totalPages = Math.ceil(this.totalItems / this.pageSize);
-      this.paginateAndGroupRosters();
     };
 
     return this.rosterService.searchRoster(nameTerm)
       .subscribe(handleSearchResponse)
   }
 
-  handleSaveItem(event: any) {
-    const { rosterName, weeklyWorkload, dailySchedules, dutySchedules } = event;
-
-    if (dailySchedules) {
-      this.createDailyRoster(rosterName, weeklyWorkload, dailySchedules);
-
-    } else if (dutySchedules) {
-      // Chamada para duty
-      this.createRosterDuty(rosterName, weeklyWorkload, dutySchedules);
-    }
-  }
-
   openAddRosterModel() {
     this.showAddRosterModal = true;
+  }
+  
+  openUpdateRosterDailyModal(roster: RosterDaily) {
+    this.showUpdateRosterDailyModal = true;
+    this.selectedRosterDaily = roster;
+  }
+  
+  openUpdateRosterDutyModal(roster: RosterDuty) {
+    this.showUpdateRosterDutyModal = true;
+    this.selectedRosterDuty = roster;
   }
 
   openViewDutySchedulesModal(roster: RosterDuty) {
@@ -195,7 +171,7 @@ export class RosterComponent {
     this.showViewDutySchedulesModal = true;
   }
   
-  openViewDailySchedulesModal(roster: DailyRoster) {
+  openViewDailySchedulesModal(roster: RosterDaily) {
     this.selectedRosterDaily = roster;
     console.log("RosterDaily: ", this.selectedRosterDaily)
     this.showViewDailySchedulesModal = true;
@@ -203,6 +179,42 @@ export class RosterComponent {
 
   closaAddRosterModel() {
     this.showAddRosterModal = false;
+  }
+  
+  handleAddItem(event: any) {
+    const { rosterName, weeklyWorkload, dailySchedules, dutySchedules } = event;
+
+    if (dailySchedules) {
+      this.createDailyRoster(rosterName, weeklyWorkload, dailySchedules);
+
+    } else if (dutySchedules) {
+      this.createRosterDuty(rosterName, weeklyWorkload, dutySchedules);
+    }
+  }
+
+  handleUpdateRosterDaily(event: any) {
+    const rosterDaily = {
+      id: this.selectedRosterDaily.id,
+      name: event.rosterName,
+      weeklyWorkload: event.weeklyWorkload,
+      schedules: event.dailySchedules
+    };
+
+    this.updateRosterDaily(rosterDaily);
+  }
+  
+  handleUpdateRosterDuty(event: any) {
+    const rosterDuty = {
+                        id: this.selectedRosterDuty.id, 
+                        name: event.rosterName,
+                        weeklyWorkload: event.weeklyWorkload,
+                        schedules: {
+                          startTime: event.startTime,
+                          workDuration: event.workDuration,
+                          timeOff: event.timeOff
+                        }
+                      }
+    this.updateRosterDuty(rosterDuty);
   }
 
   createRosterDuty(name: string, weeklyWorkload: number, dutySchedules: { startTime: string, workDuration: string, timeOff: string }) {
@@ -241,7 +253,6 @@ export class RosterComponent {
       schedules: dailySchedules
     };
 
-    console.log("NEW DAILY ROSTER:", newDailyRoster);
     this.rosterService.createDailyRoster(newDailyRoster).subscribe({
       next: (created) => {
         this.showAddRosterModal = false;
@@ -257,43 +268,31 @@ export class RosterComponent {
     });
   }
 
-  private paginateAndGroupRosters() {
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    const paginated = this.rosters.slice(startIndex, endIndex);
-
-    const map = new Map<string, Roster[]>();
-    paginated.forEach(r => {
-      const name = r.name || 'N/A';
-      if (!map.has(name)) map.set(name, []);
-      map.get(name)!.push(r);
-    });
-
-    this.groupedRosters = Array.from(map.entries()).map(([rosterName, rosters]) => ({
-      rosterName,
-      rosters,
-      expanded: false
-    }));
-  }
-
-  goToPage(page: number) {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-      this.paginateAndGroupRosters();
+  updateRosterDaily(rosterDaily: RosterDaily) {
+      this.rosterService.updateRosterDaily(rosterDaily).subscribe({
+          next: () => {
+            this.loadRosters()
+            this.showUpdateRosterDailyModal = false;
+            this.notificationService.showSuccess("Roster updated successfully");
+          },
+          error: () => {
+            this.notificationService.showError("Error while updating Roster");
+            this.showUpdateRosterDailyModal = false;
+          }
+        });
     }
-  }
-
-  nextPage() {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-      this.paginateAndGroupRosters();
+    
+    updateRosterDuty(rosterDuty: RosterDuty) {
+      this.rosterService.updateRosterDuty(rosterDuty).subscribe({
+          next: () => {
+            this.loadRosters()
+            this.showUpdateRosterDutyModal = false;
+            this.notificationService.showSuccess("Roster updated successfully");
+          },
+          error: () => {
+            this.notificationService.showError("Error while updating Roster");
+            this.showUpdateRosterDutyModal = false;
+          }
+        });
     }
-  }
-
-  previousPage() {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-      this.paginateAndGroupRosters();
-    }
-  }
 }

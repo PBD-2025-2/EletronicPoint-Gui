@@ -34,12 +34,27 @@ export interface RosterDuty {
   }
 }
 
-export interface DailyRoster {
+export interface RosterDaily {
   id: number;
   name: string;
-  type: string;
   weeklyWorkload: number;
   schedules: DailySchedules[]
+}
+
+export interface RosterDailyPostRequest {
+  name: string;
+  weeklyWorkload: number;
+  schedules: DailySchedules[]
+}
+
+export interface RosterDutyPostRequest {
+  name: string;
+  weeklyWorkload: number;
+  schedules: {
+    startTime: string,
+    workDuration: number,
+    timeOff: number
+  }
 }
 
 export interface DailySchedules {
@@ -62,7 +77,7 @@ export class RosterService {
       return this.searchRosterById(trimmed);
     }
 
-    return this.searchRosterByName(term);
+    return this.getRosterByName(term);
   }
 
   getRosters(): Observable<Roster[]> {
@@ -75,46 +90,6 @@ export class RosterService {
     );
   }
 
-
-  searchRosterByName(rosterName: string): Observable<Roster[]> {
-    const encName = encodeURIComponent(rosterName.trim());
-    const url = `${this.apiUrlRosters}/name/${encName}`;
-    console.log("url: ", url)
-    return this.http.get<Roster>(url).pipe(
-      map(r => {
-        if (!r) {
-          throw new Error("Roster not found")
-        }
-        return [r]
-      }),
-      catchError(err => throwError(() => err))
-    );
-  }
-
-  createDailyRoster(newDailyRoster: {
-    name: string;
-    weeklyWorkload: number;
-    schedules: { day: string; schedules: string[] }[]; // <- agora string[]
-  }): Observable<DailyRoster> {
-    return this.http.post<DailyRoster>(`${this.apiUrlRosters}/daily`, newDailyRoster);
-  }
-
-
-
-  createRosterDuty(
-    newRosterDuty: {
-      name: string;
-      weeklyWorkload: number;
-      schedules: {
-        startTime: string,
-        workDuration: number,
-        timeOff: number
-      }
-    }): Observable<RosterDuty> {
-    return this.http.post<RosterDuty>(`${this.apiUrlRosters}/duty`, newRosterDuty);
-  }
-
-
   getRosterByName(rosterName: string): Observable<Roster[]> {
     const encoded = encodeURIComponent(rosterName.trim());
 
@@ -126,5 +101,21 @@ export class RosterService {
         return r;
       })
     );
+  }
+
+  createDailyRoster(newDailyRoster: RosterDailyPostRequest): Observable<RosterDaily> {
+    return this.http.post<RosterDaily>(`${this.apiUrlRosters}/daily`, newDailyRoster);
+  }
+
+  createRosterDuty(newRosterDuty: RosterDutyPostRequest): Observable<RosterDuty> {
+    return this.http.post<RosterDuty>(`${this.apiUrlRosters}/duty`, newRosterDuty);
+  }
+
+  updateRosterDaily(rosterDaily: RosterDaily): Observable<RosterDaily>{
+      return this.http.put<RosterDaily>(`${this.apiUrlRosters}/Diary/id${rosterDaily.id}`, rosterDaily)
+  }
+  
+  updateRosterDuty(rosterDuty: RosterDuty): Observable<RosterDuty>{
+      return this.http.put<RosterDuty>(`${this.apiUrlRosters}/Duty/id${rosterDuty.id}`, rosterDuty)
   }
 }

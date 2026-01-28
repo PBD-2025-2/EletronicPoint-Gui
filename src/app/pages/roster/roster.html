@@ -58,18 +58,33 @@
           <th mat-header-cell *matHeaderCellDef> Actions </th>
           <td mat-cell *matCellDef="let roster">
             <div class="roster-actions">
-              <button type="button" class="schedules-role-btn" *ngIf="roster.type === 'Diaria'" (click)="openViewDailySchedulesModal(roster); $event.stopPropagation()">
-                <img src="assets/schedules-btn.svg" class="btn-icon">
-              </button>
-              <button type="button" class="schedules-role-btn" *ngIf="roster.type === 'Plantão'" (click)="openViewDutySchedulesModal(roster); $event.stopPropagation()">
-                <img src="assets/schedules-btn.svg" class="btn-icon">
-              </button>
-              <button type="button" class="update-role-btn" (click)="closaAddRosterModel(); $event.stopPropagation()">
-                <img src="assets/update-btn.svg" class="btn-icon">
-              </button>
+
+              @if (roster.type === 'Diaria') {
+                <button type="button" class="schedules-role-btn" (click)="openViewDailySchedulesModal(roster); $event.stopPropagation()">
+                  <img src="assets/schedules-btn.svg" class="btn-icon">
+                </button>
+                
+                <button type="button" class="update-role-btn" (click)="openUpdateRosterDailyModal(roster); $event.stopPropagation()">
+                  <img src="assets/update-btn.svg" class="btn-icon">
+                </button> 
+
+              }
+              
+              @if (roster.type === 'Plantão') {
+                <button type="button" class="schedules-role-btn" (click)="openViewDutySchedulesModal(roster); $event.stopPropagation()">
+                  <img src="assets/schedules-btn.svg" class="btn-icon">
+                </button>
+
+                <button type="button" class="update-role-btn" (click)="openUpdateRosterDutyModal(roster); $event.stopPropagation()">
+                  <img src="assets/update-btn.svg" class="btn-icon">
+                </button>
+              }
+
+
               <button type="button" class="delete-role-btn" (click)="closaAddRosterModel(); $event.stopPropagation()">
                 <img src="assets/delete-btn.svg" class="btn-icon">
               </button>
+              
             </div>
           </td>
         </ng-container>
@@ -91,10 +106,22 @@
 </section>
 
 <app-add-roster-modal 
-    *ngIf="showAddRosterModal" 
-    (closeModal)="showAddRosterModal = false"
-    (saveItem)="handleSaveItem($event)">
+  *ngIf="showAddRosterModal" 
+  (closeModal)="showAddRosterModal = false"
+  (saveItem)="handleAddItem($event)">
 </app-add-roster-modal>
+
+<app-update-roster-duty-modal 
+  *ngIf="showUpdateRosterDutyModal" 
+  (closeModal)="showUpdateRosterDutyModal = false"
+  (updateItem)="handleUpdateRosterDuty($event)">
+</app-update-roster-duty-modal>
+
+<app-update-roster-daily-modal 
+  *ngIf="showUpdateRosterDailyModal" 
+  (closeModal)="showUpdateRosterDailyModal = false"
+  (updateItem)="handleUpdateRosterDaily($event)">
+</app-update-roster-daily-modal>
 
 <app-view-dutySchedules-modal 
   *ngIf="showViewDutySchedulesModal"
