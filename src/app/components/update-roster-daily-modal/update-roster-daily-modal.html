@@ -1,0 +1,86 @@
+<div class="modal-overlay" (click)="close()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>{{ modalTitle }}</h2>
+    <form class="form-section">
+      <label>
+        Roster Name:
+        <input
+          placeholder="Roster Name"
+          type="text"
+          [(ngModel)]="rosterName"
+          name="rosterName"
+          required
+          
+        />
+      </label>
+
+      <label>
+        Weekly Workload (hours):
+        <input
+          placeholder="Ex: 40"
+          type="number"
+          [(ngModel)]="weeklyWorkload"
+          name="weeklyWorkload"
+          required
+        />
+      </label>
+
+      <div class="days-section">
+            
+            <div class="day-row" *ngFor="let day of dailySchedules; let i = index">
+              <div class="day-header">
+                <select class="day-input"   [(ngModel)]="dailySchedules[i].day" name="day{{ i }}" required>
+                  <option value="" disabled hidden>
+                    Selecione o dia
+                  </option>
+                  <option *ngFor="let day of daysOfWeek" [value]="day" [disabled]="isDayDisabled(day, i)">
+                    {{ day | titlecase }}
+                  </option>
+                </select>
+
+                @if (dailySchedules.length > 1) {
+                  <button type="button" (click)="removeDay(i)">Remove Day</button>
+                }
+              </div>
+
+              <div class="schedule-row" *ngFor="let sched of dailySchedules[i].schedules; let j = index">
+              <input
+                class="schedule-input"
+                type="time"
+                [(ngModel)]="dailySchedules[i].schedules[j].start"
+                name="start{{ i }}_{{ j }}"
+                required
+              />
+              -
+              <input
+                class="schedule-input"
+                type="time"
+                [(ngModel)]="dailySchedules[i].schedules[j].end"
+                name="end{{ i }}_{{ j }}"
+                required
+              />
+
+              @if (dailySchedules[i].schedules.length > 1) {
+                <button type="button" class="remove-button" (click)="removeSchedule(i, j)">Remove</button>
+              }
+            </div>
+
+            <button type="button" class="add-schedule-button" (click)="addSchedule(i)" [disabled]="dailySchedules[i].schedules.length >= 2"> + Add Interval</button>
+          </div>
+
+          <div class="day-footer">
+            <button type="button" (click)="addDay()" [disabled]="dailySchedules.length >= 7">+ Add Day</button>
+
+            <div class="day-notice">
+                <p>Define up to 7 days and 2 time intervals per day !</p>
+            </div>
+          </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn-cancel" (click)="close()">CANCEL</button>
+        <button type="button" class="btn-update" [disabled]="!isFormValid()" (click)="update()">UPDATE</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,64 @@
+<div class="modal-overlay" (click)="close()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>{{ modalTitle }}</h2>
+    <form class="form-section">
+      <label>
+        Roster Name:
+        <input
+          placeholder="Roster Name"
+          type="text"
+          [(ngModel)]="rosterName"
+          name="rosterName"
+          required
+          
+        />
+      </label>
+
+      <label>
+        Weekly Workload (hours):
+        <input
+          placeholder="Ex: 40"
+          type="number"
+          [(ngModel)]="weeklyWorkload"
+          name="weeklyWorkload"
+          required
+        />
+      </label>
+
+      <label>
+        Start Time:
+        <input
+          type="time"
+          [(ngModel)]="startTime"
+          name="startTime"
+          required
+        />
+      </label>
+
+      <label>
+        Work Duration (hours):
+        <input
+          type="number"
+          [(ngModel)]="workDuration"
+          name="workDuration"
+          required
+        />
+      </label>
+
+      <label>
+        Time Off (hours):
+        <input
+          type="number"
+          [(ngModel)]="timeOff"
+          name="timeOff"
+          required
+        />
+      </label>
+
+      <div class="actions">
+        <button type="button" class="btn-cancel" (click)="close()">CANCEL</button>
+        <button type="button" class="btn-update" [disabled]="!isFormValid()" (click)="update()">UPDATE</button>
+      </div>
+    </form>
+  </div>
+</div>

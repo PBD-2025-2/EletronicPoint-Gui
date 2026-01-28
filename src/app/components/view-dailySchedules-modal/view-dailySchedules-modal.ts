@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DailyRoster, DailySchedules } from '../../services/roster.service';
+import { RosterDaily, DailySchedules } from '../../services/roster.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
@@ -26,7 +26,7 @@ export class ViewDailySchedulesrModalComponent {
   displayedColumns: string[] = ['day', 'entry1', 'exit1', 'entry2', 'exit2'];
   dataSource = new MatTableDataSource<DailyScheduleTableModal>();
 
-  @Input() selectedRoster!: DailyRoster;
+  @Input() selectedRoster!: RosterDaily;
   @Output() closeModal = new EventEmitter<void>();
 
   ngOnChanges() {
